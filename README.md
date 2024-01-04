@@ -4,7 +4,7 @@ runme:
   version: v2.0
 ---
 
-# aia-cortex-nlu
+# aia-device
 
 Natural Languague Understanding
 
