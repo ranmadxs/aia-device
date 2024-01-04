@@ -14,6 +14,8 @@ coverage = "^7.3.2"
 numpy = "^1.26.2"
 aia-utils = "^0.1.6"
 pymongo = "^4.6.1"
+rpi-gpio = "^0.7.1"
+spidev = "^3.6"
 
 [tool.pytest.ini_options]
 pythonpath = "aia_device"

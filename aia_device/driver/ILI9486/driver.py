@@ -24,7 +24,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 import RPi.GPIO as GPIO
 from spidev import SpiDev
-import config
+import aia_device.driver.ILI9486.config
 
 # constants
 LCD_WIDTH = 320
