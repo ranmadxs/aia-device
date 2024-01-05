@@ -6,6 +6,7 @@ runme:
 
 # RELEASE
 
-[0.2.0] First Version 28-dic-2023
+[0.0.2] First Version 05-ene-2024
 
-- Feature: Add Docker Config
+- Feature: Add Device Driver ILI9486
+- Kafka support
