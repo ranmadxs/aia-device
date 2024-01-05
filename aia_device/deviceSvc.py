@@ -20,7 +20,7 @@ class DeviceService:
 
     def _beforeCallback(self):
         imgTrx = ImageTransformer()
-        imgResult = imgTrx.fileToRGB("resources/aia.png")
+        imgResult = imgTrx.fileToRGB("resources/images/aia.png")
         imgResult = imgTrx.resizeProportional(imgResult)
         self.driver.sendImageToDevice(imgResult)
         #self.sendImageToDevice(imgResult)
@@ -29,4 +29,11 @@ class DeviceService:
         text = "Llegó un mensaje!"
         logger.debug(text)
         logger.debug(aiaDevice)
+        if "type" in aiaDevice and "origin" in aiaDevice and "name" in aiaDevice:
+            if aiaDevice["type"] == "image_resources":
+                imgTrx = ImageTransformer()
+                imgResult = imgTrx.fileToRGB(f"{aiaDevice["origin"]}/{aiaDevice["name"]}")
+                imgResult = imgTrx.resizeProportional(imgResult)
+                self.driver.sendImageToDevice(imgResult)
+                #self.sendImageToDevice(imgResult)
 
