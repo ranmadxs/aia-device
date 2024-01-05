@@ -17,3 +17,8 @@ currentPath = os.getcwd()
 #poetry run pytest tests/test_queueProducer.py::test_produce -s
 def test_produce():
     logger.debug("Test produce message to queue:")
+    topicProducer = os.environ['TEST_CLOUDKAFKA_TOPIC_PRODUCER']
+    logger.info("Test Produce queue " + topicProducer)
+    queueProducer = QueueProducer(topicProducer, "test001", "aia-utils")
+    queueProducer.send({"type": "image_resources", "origin": "resources/images", "name": "Loading02.png"})
+    queueProducer.flush()

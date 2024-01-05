@@ -23,7 +23,6 @@ class DeviceService:
         imgResult = imgTrx.fileToRGB("resources/images/aia.png")
         imgResult = imgTrx.resizeProportional(imgResult)
         self.driver.sendImageToDevice(imgResult)
-        #self.sendImageToDevice(imgResult)
 
     def callback(self, aiaDevice: any):
         text = "Llegó un mensaje!"
@@ -32,8 +31,7 @@ class DeviceService:
         if "type" in aiaDevice and "origin" in aiaDevice and "name" in aiaDevice:
             if aiaDevice["type"] == "image_resources":
                 imgTrx = ImageTransformer()
-                imgResult = imgTrx.fileToRGB(f"{aiaDevice["origin"]}/{aiaDevice["name"]}")
+                imgResult = imgTrx.fileToRGB(f"{aiaDevice['origin']}/{aiaDevice['name']}")
                 imgResult = imgTrx.resizeProportional(imgResult)
                 self.driver.sendImageToDevice(imgResult)
-                #self.sendImageToDevice(imgResult)
 

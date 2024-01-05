@@ -24,4 +24,5 @@ class LCDILI9486:
 
     def display(self, image: Image):
         print('Drawing image')
+        self.lcd.clear().display()
         self.lcd.display(image)
