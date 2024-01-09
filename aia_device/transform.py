@@ -1,7 +1,7 @@
 from PIL import Image
-#from aia_utils.logs_cfg import config_logger
+from aia_utils.logs_cfg import config_logger
 import logging
-#config_logger()
+config_logger()
 logger = logging.getLogger(__name__)
 
 class ImageTransformer:
@@ -20,6 +20,10 @@ class ImageTransformer:
         #png = Image.open("foo.png")
         width, height = image.size
         logger.debug(f"image size: {width}x{height}")
+        if (height > width):
+            logger.debug("rotate image 90ª")
+            image = image.rotate(90) 
+            width, height = image.size
         im_w = width
         im_h = height
         if im_w > max_w:

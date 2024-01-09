@@ -20,5 +20,5 @@ def test_produce():
     topicProducer = os.environ['TEST_CLOUDKAFKA_TOPIC_PRODUCER']
     logger.info("Test Produce queue " + topicProducer)
     queueProducer = QueueProducer(topicProducer, "test001", "aia-utils")
-    queueProducer.send({"type": "image_resources", "origin": "resources/images", "name": "Loading02.png"})
+    queueProducer.send({"type": "image_resources", "origin": "resources/images", "name": "Loading01.png"})
     queueProducer.flush()
