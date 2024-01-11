@@ -19,7 +19,7 @@ git remote set-url origin git@github_ranmadxs:ranmadxs/aia-device.git
 
 ```sh {"id":"01HJV2GKHFHRCW2MAYBX6DWF7V"}
 #set var entorno
-export AIA_TAG_DEV=aia-device_0.0.2
+export AIA_TAG_DEV=aia-device_0.0.3
 ```
 
 ```sh {"id":"01HJQ7F9RXZBJJ4YEQAAH1BXHZ"}
@@ -33,7 +33,7 @@ docker push keitarodxs/aia:$AIA_TAG_DEV
 sudo docker exec -ti aia_device bash
 
 #run
-docker run --privileged -d --rm -e TZ=America/Santiago -v /home/ranmadxs/aia/aia-device/target:/app/target --net=bridge --name aia_device --env-file .env keitarodxs/aia:$AIA_TAG_DEV
+docker run --privileged -d --restart=always -e TZ=America/Santiago -v /home/ranmadxs/aia/aia-device/resources/images:/app/resources/images -v /home/ranmadxs/aia/aia-device/target:/app/target --net=bridge --name aia_device --env-file .env keitarodxs/aia:$AIA_TAG_DEV
 ```
 
 ### Install Img
