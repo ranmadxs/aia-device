@@ -1,4 +1,4 @@
-FROM keitarodxs/aia:aia-utils_0.1.7
+FROM keitarodxs/aia:aia-utils_0.1.8
 WORKDIR /app
 
 RUN pip install --upgrade pip

@@ -19,8 +19,11 @@ class DeviceService:
         queueConsumer.listen(self.callback)
 
     def _beforeCallback(self):
+        self._sendImg("resources/images/aia.png")
+
+    def _sendImg(self, imgName: str):
         imgTrx = ImageTransformer()
-        imgResult = imgTrx.fileToRGB("resources/images/aia.png")
+        imgResult = imgTrx.fileToRGB(imgName)
         imgResult = imgTrx.resizeProportional(imgResult)
         self.driver.sendImageToDevice(imgResult)
 
@@ -30,8 +33,14 @@ class DeviceService:
         logger.debug(aiaDevice)
         if "type" in aiaDevice and "origin" in aiaDevice and "name" in aiaDevice:
             if aiaDevice["type"] == "image_resources":
-                imgTrx = ImageTransformer()
-                imgResult = imgTrx.fileToRGB(f"{aiaDevice['origin']}/{aiaDevice['name']}")
-                imgResult = imgTrx.resizeProportional(imgResult)
-                self.driver.sendImageToDevice(imgResult)
-
+                try:
+                    self._sendImg(f"{aiaDevice['origin']}/{aiaDevice['name']}")
+                    #imgTrx = ImageTransformer()
+                    #imgResult = imgTrx.fileToRGB(f"{aiaDevice['origin']}/{aiaDevice['name']}")
+                    #imgResult = imgTrx.resizeProportional(imgResult)
+                    #self.driver.sendImageToDevice(imgResult)
+                except Exception as e:
+                    logger.error(e)
+                    logger.error(">> Error al enviar la imagen al dispositivo")
+                    #self._beforeCallback()
+                    self._sendImg("resources/images/error.png")
