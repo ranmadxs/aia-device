@@ -6,7 +6,11 @@ runme:
 
 # RELEASE
 
-[0.0.3] First Version 15-ene-2024
+[0.0.4] 21-ene-2024
+
+- Feature: Read images from Kafka Queue.
+
+[0.0.3] 15-ene-2024
 
 - Hotfix: Add Try Catch send to device.
 - Add error.png
