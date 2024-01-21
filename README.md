@@ -1,7 +1,7 @@
 ---
 runme:
   id: 01HJQ7F9RYFAQG4NCAYG2PW00T
-  version: v2.0
+  version: v2.2
 ---
 
 # aia-device
@@ -19,7 +19,7 @@ git remote set-url origin git@github_ranmadxs:ranmadxs/aia-device.git
 
 ```sh {"id":"01HJV2GKHFHRCW2MAYBX6DWF7V"}
 #set var entorno
-export AIA_TAG_DEV=aia-device_0.0.3
+export AIA_TAG_DEV=aia-device_0.0.4
 ```
 
 ```sh {"id":"01HJQ7F9RXZBJJ4YEQAAH1BXHZ"}

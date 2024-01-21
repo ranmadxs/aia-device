@@ -1,6 +1,6 @@
 [[package]]
 name = "aia-utils"
-version = "0.1.6"
+version = "0.1.11"
 description = ""
 category = "main"
 optional = false
@@ -9,7 +9,26 @@ python-versions = ">=3.11,<4.0"
 [package.dependencies]
 confluent-kafka = ">=2.3.0,<3.0.0"
 coverage = ">=7.3.2,<8.0.0"
+html2image = ">=2.0.4,<3.0.0"
+pillow = ">=10.2.0,<11.0.0"
+pymongo = ">=4.6.1,<5.0.0"
 PyYAML = ">=6.0.1,<7.0.0"
+
+[[package]]
+name = "certifi"
+version = "2023.11.17"
+description = "Python package for providing Mozilla's CA Bundle."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "charset-normalizer"
+version = "3.3.2"
+description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
+category = "main"
+optional = false
+python-versions = ">=3.7.0"
 
 [[package]]
 name = "colorama"
@@ -63,6 +82,26 @@ trio = ["trio (>=0.14,<0.23)"]
 wmi = ["wmi (>=1.5.1,<2.0.0)"]
 
 [[package]]
+name = "html2image"
+version = "2.0.4.3"
+description = "Package acting as a wrapper around the headless mode of existing web browsers to generate images from URLs and from HTML+CSS strings or files."
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.dependencies]
+requests = "*"
+websocket-client = ">=1.0.0,<2.0.0"
+
+[[package]]
+name = "idna"
+version = "3.6"
+description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -72,7 +111,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "numpy"
-version = "1.26.2"
+version = "1.26.3"
 description = "Fundamental package for array computing in Python"
 category = "main"
 optional = false
@@ -197,17 +236,65 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 
+[[package]]
+name = "requests"
+version = "2.31.0"
+description = "Python HTTP for Humans."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+charset-normalizer = ">=2,<4"
+idna = ">=2.5,<4"
+urllib3 = ">=1.21.1,<3"
+
+[package.extras]
+socks = ["PySocks (>=1.5.6,!=1.5.7)"]
+use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+
+[[package]]
+name = "urllib3"
+version = "2.1.0"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
+socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
+zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
+name = "websocket-client"
+version = "1.7.0"
+description = "WebSocket client for Python with low level API options"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+docs = ["Sphinx (>=6.0)", "sphinx-rtd-theme (>=1.1.0)"]
+optional = ["python-socks", "wsaccel"]
+test = ["websockets"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.11.2,<3.12"
-content-hash = "4befc46aa0f61f5c739b76b3db2c6e1fa64d452af61a7410f6bf3ef87d3106f0"
+content-hash = "824c5892b889a1ac6684053a754c94229336a2c22d68a5a7481b079719148660"
 
 [metadata.files]
 aia-utils = []
+certifi = []
+charset-normalizer = []
 colorama = []
 confluent-kafka = []
 coverage = []
 dnspython = []
+html2image = []
+idna = []
 iniconfig = []
 numpy = []
 packaging = []
@@ -219,3 +306,6 @@ pytest-cov = []
 pytest-dotenv = []
 python-dotenv = []
 pyyaml = []
+requests = []
+urllib3 = []
+websocket-client = []
