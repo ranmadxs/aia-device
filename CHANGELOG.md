@@ -6,6 +6,12 @@ runme:
 
 # RELEASE
 
+```sh
+
+[0.0.5] 22-ene-2024
+
+- Fix Rotate Img 90ª
+
 [0.0.4] 21-ene-2024
 
 - Feature: Read images from Kafka Queue.
@@ -19,3 +25,5 @@ runme:
 
 - Feature: Add Device Driver ILI9486
 - Kafka support
+
+```

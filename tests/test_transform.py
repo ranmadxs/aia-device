@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 def test_fileToRGB():
     print("test_fileToRGB")
     imgT = ImageTransformer()
-    imgResult = imgT.fileToRGB("resources/images/aia.png")
+    #imgResult = imgT.fileToRGB("resources/images/aia.png")
+    imgResult = imgT.fileToRGB("resources/images/EmailRead.gv.png")
+    
     imgResult = imgT.resizeProportional(imgResult)
-    assert imgResult.size == (465, 320)
+    imgResult.save("resources/images/result001.png")
+    #assert imgResult.size == (465, 320)

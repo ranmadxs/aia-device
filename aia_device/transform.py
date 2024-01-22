@@ -22,8 +22,9 @@ class ImageTransformer:
         logger.debug(f"image size: {width}x{height}")
         if (height > width):
             logger.debug("rotate image 90ª")
-            image = image.rotate(90) 
+            image = image.rotate(90, expand=True) 
             width, height = image.size
+            logger.debug(f"[NEW] image size: {width}x{height}")
         im_w = width
         im_h = height
         if im_w > max_w:
