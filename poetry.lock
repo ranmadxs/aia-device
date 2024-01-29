@@ -1,6 +1,6 @@
 [[package]]
 name = "aia-utils"
-version = "0.1.11"
+version = "0.1.15"
 description = ""
 category = "main"
 optional = false
@@ -13,6 +13,7 @@ html2image = ">=2.0.4,<3.0.0"
 pillow = ">=10.2.0,<11.0.0"
 pymongo = ">=4.6.1,<5.0.0"
 PyYAML = ">=6.0.1,<7.0.0"
+tomli = ">=2.0.1,<3.0.0"
 
 [[package]]
 name = "certifi"
@@ -255,6 +256,14 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
+name = "tomli"
+version = "2.0.1"
+description = "A lil' TOML parser"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "urllib3"
 version = "2.1.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -283,7 +292,7 @@ test = ["websockets"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.11.2,<3.12"
-content-hash = "824c5892b889a1ac6684053a754c94229336a2c22d68a5a7481b079719148660"
+content-hash = "fa2cc96ff32c514dee50df53cc9a534af080c40a78698a6323edac2a4ff94ea8"
 
 [metadata.files]
 aia-utils = []
@@ -307,5 +316,6 @@ pytest-dotenv = []
 python-dotenv = []
 pyyaml = []
 requests = []
+tomli = []
 urllib3 = []
 websocket-client = []

@@ -1,12 +1,15 @@
 ---
 runme:
   id: 01HJQ7JXMD6NADWWC23SR9W42S
-  version: v2.0
+  version: v2.2
 ---
 
 # RELEASE
 
-```sh
+```sh {"id":"01HN76WB0CNT1DFH3J3KY1GW35"}
+[0.1.0] 28-ene-2024
+
+- Feature: Stream images
 
 [0.0.5] 22-ene-2024
 

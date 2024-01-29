@@ -19,7 +19,7 @@ git remote set-url origin git@github_ranmadxs:ranmadxs/aia-device.git
 
 ```sh {"id":"01HJV2GKHFHRCW2MAYBX6DWF7V"}
 #set var entorno
-export AIA_TAG_DEV=aia-device_0.0.5
+export AIA_TAG_DEV=aia-device_0.1.0
 ```
 
 ```sh {"id":"01HJQ7F9RXZBJJ4YEQAAH1BXHZ"}
