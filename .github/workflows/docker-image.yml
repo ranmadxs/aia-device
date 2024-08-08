@@ -3,7 +3,7 @@ name: Docker Image Publish
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "*.*.*"
 
 jobs:
 
@@ -30,7 +30,7 @@ jobs:
       with:
           context: .
           push: true
-          tags: ${{ env.RELEASE_VERSION }}
+          tags: keitarodxs/aia_device:${{ env.RELEASE_VERSION }}
           platforms: linux/arm64/v8
       env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
