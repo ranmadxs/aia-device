@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aia-device"
-version = "0.1.0"
+version = "0.2.0"
 description = "Aia device service"
 authors = ["Edgar Rodrigo Sanchez De Gracia <grineldosanchez@yahoo.es>"]
 readme = "README.md"
@@ -8,14 +8,16 @@ packages = [{include = "aia_device"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11.2,<3.12"
-Pillow = "^10.1.0"
+Pillow = "^10.2.0"
 python-dotenv = "^1.0.0"
 coverage = "^7.3.2"
 numpy = "^1.26.2"
 pymongo = "^4.6.1"
-rpi-gpio = "^0.7.1"
-spidev = "^3.6"
-aia_utils = "^0.1.15"
+#rpi-gpio = "^0.7.1"
+#spidev = "^3.6"
+scipy = "^1.12.0"
+scikit-image = "^0.22.0"
+aia_utils = "^0.2.1"
 
 [tool.pytest.ini_options]
 pythonpath = "aia_device"

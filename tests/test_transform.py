@@ -1,4 +1,4 @@
-from transform import ImageTransformer
+from aia_device.transform import ImageTransformer
 from aia_utils.logs_cfg import config_logger
 import logging
 #config_logger()

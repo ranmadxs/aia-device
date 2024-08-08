@@ -6,6 +6,7 @@ from aia_device.driver.driver_svc import DriverController
 import base64
 import datetime
 import json
+import socket
 
 class DeviceService:
 
@@ -16,18 +17,31 @@ class DeviceService:
         self.logger = logging.getLogger(__name__)
         self.driver = DriverController()
 
+    def get_local_ip(self) -> str:
+        try:
+            with open('target/local_ip.txt') as f:
+                loc_ip = f.read().strip()
+                self.logger.debug(loc_ip)
+                return loc_ip
+        except Exception as e:
+            self.logger.error(e)
+            self.logger.error(">> Error al obtener la IP local")
+            return None
+
     def kafkaListener(self):
         queueConsumer = QueueConsumer(self.topic_consumer)
         self._beforeCallback()
         queueConsumer.listen(self.callback, False)
 
     def _beforeCallback(self):
-        self._sendImg("resources/images/aia.png")
+        self._sendImg("resources/images/aia.png", self.get_local_ip())
 
-    def _sendImg(self, imgName: str):
+    def _sendImg(self, imgName: str, text: str = None):
         imgTrx = ImageTransformer()
         imgResult = imgTrx.fileToRGB(imgName)
         imgResult = imgTrx.resizeProportional(imgResult)
+        if text is not None:
+            imgResult = imgTrx.text2img(imgResult, text)
         self.driver.sendImageToDevice(imgResult)
 
     def processImage(self, img_data: str, name: str = None):

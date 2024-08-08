@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from aia_utils.logs_cfg import config_logger
 import logging
 config_logger()
@@ -16,6 +16,18 @@ class ImageTransformer:
         #rgbImg = Image.new("RGB", png.size, (255, 255, 255))
         return image.convert('RGB')
     
+    def text2img(self, 
+                 image: Image, 
+                 text: str, 
+                 pos: tuple = (0, 0), 
+                 font: str = "Arial.ttf", 
+                 size: int = 12, 
+                 color: tuple = (0, 0, 0)) -> Image:
+        font_type = ImageFont.truetype(font, size)
+        draw = ImageDraw.Draw(image)
+        draw.text(pos, text, font=font_type, fill=color)
+        return image
+
     def resizeProportional(self, image: Image, max_w: int = 480, max_h: int = 320) -> Image:
         #png = Image.open("foo.png")
         width, height = image.size

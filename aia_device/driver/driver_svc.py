@@ -19,6 +19,7 @@ class DriverController:
             self.lcd.display(img)
             logger.debug("Linux")
         else:
-            logger.warning("Not Linux compatible")
-            img.save('target/sample.png', 'PNG', quality=100)
+            fileTmp = 'target/sample.png'
+            logger.warning(f"Not Linux compatible, ouput saved in:: {fileTmp}")
+            img.save(fileTmp, 'PNG', quality=100)
             
