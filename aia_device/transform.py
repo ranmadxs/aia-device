@@ -23,7 +23,7 @@ class ImageTransformer:
                  font: str = "Arial.ttf", 
                  size: int = 12, 
                  color: tuple = (0, 0, 0)) -> Image:
-        font_type = ImageFont.truetype(font, size)
+        font_type = ImageFont.load_default()
         draw = ImageDraw.Draw(image)
         draw.text(pos, text, font=font_type, fill=color)
         return image
