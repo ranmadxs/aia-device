@@ -13,13 +13,14 @@ poetry run daemon
 
 git ls-remote --get-url origin 
 git remote set-url origin git@github_ranmadxs:ranmadxs/aia-device.git
-```
 
-## Docker
+#tags
+git push --tags
+```
 
 ```sh {"id":"01HJV2GKHFHRCW2MAYBX6DWF7V"}
 #set var entorno
-export AIA_TAG_DEV=0.2.0
+export AIA_TAG_DEV=0.2.1
 ```
 
 ```sh {"id":"01HJQ7F9RXZBJJ4YEQAAH1BXHZ"}

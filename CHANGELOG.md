@@ -7,7 +7,7 @@ runme:
 # RELEASE
 
 ```sh {"id":"01HN76WB0CNT1DFH3J3KY1GW35"}
-[0.2.0] 07-ago-2024
+[0.2.1] 07-ago-2024
 
 - ✨ Feature: text2img
 - ✨ Add ip to image

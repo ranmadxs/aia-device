@@ -6,8 +6,8 @@ WORKDIR /app
 COPY . .
 #COPY pyproject.toml poetry.lock ./
 RUN rm poetry.lock
-#RUN poetry add RPi.GPIO
-#RUN poetry add spidev
+RUN poetry add RPi.GPIO
+RUN poetry add spidev
 RUN poetry install
 
 CMD [ "poetry", "run", "daemon"]
