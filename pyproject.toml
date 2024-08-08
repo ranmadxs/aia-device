@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aia-device"
-version = "0.2.1"
+version = "0.2.3"
 description = "Aia device service"
 authors = ["Edgar Rodrigo Sanchez De Gracia <grineldosanchez@yahoo.es>"]
 readme = "README.md"
