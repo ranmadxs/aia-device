@@ -19,12 +19,21 @@ jobs:
       run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: |
+          fgygh/fglanguage
+          ghcr.io/${{ github.repository }}
+          tags: latest
     - name: Build & Push to Docker Hub
       # You may pin to the exact commit or the version.
       uses: docker/build-push-action@v4
       with:
-          args: --docker
+          context: .
           push: true
+          tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/arm64/v8
       env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
