@@ -7,8 +7,8 @@ runme:
 # RELEASE
 
 ```sh {"id":"01HN76WB0CNT1DFH3J3KY1GW35"}
-[0.2.12] 13-ago-2024
-- 🔄 Update aia-utils=0.3.1
+[0.2.13] 13-ago-2024
+- 🔄 Update aia-utils=0.3.3
 
 [0.2.10] 08-ago-2024
 

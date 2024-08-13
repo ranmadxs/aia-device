@@ -1,6 +1,6 @@
 [[package]]
 name = "aia-utils"
-version = "0.3.2"
+version = "0.3.3"
 description = ""
 category = "main"
 optional = false
@@ -430,7 +430,7 @@ test = ["websockets"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.11.2,<3.12"
-content-hash = "aa9e05d3d623c49c717b9a3ac428a06bb2478a15714d8d553ff64fccbbcb91f8"
+content-hash = "129c44d1b857b07070bcff1c63e29dea687a36f838ee28492347289a630fc8bc"
 
 [metadata.files]
 aia-utils = []
