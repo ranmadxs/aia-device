@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aia-device"
-version = "0.2.11"
+version = "0.2.12"
 description = "Aia device service"
 authors = ["Edgar Rodrigo Sanchez De Gracia <grineldosanchez@yahoo.es>"]
 readme = "README.md"
@@ -17,7 +17,7 @@ pymongo = "^4.6.1"
 #spidev = "^3.6"
 scipy = "^1.12.0"
 scikit-image = "^0.22.0"
-aia_utils = "^0.3.1"
+aia_utils = "^0.3.2"
 
 [tool.pytest.ini_options]
 pythonpath = "aia_device"
