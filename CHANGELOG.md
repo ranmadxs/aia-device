@@ -6,6 +6,12 @@ runme:
 
 # RELEASE
 
+## [1.0.2] - 2026-07-15
+### Fixed
+- 🐛 Alinea `python` a `^3.13` para coincidir con la imagen base
+  `keitarodxs/aia-utils-base:v1.0.0` (python:3.13-slim). La restricción
+  anterior `<3.12` era incompatible con la base y rompía `poetry export`/`uv`.
+
 ## [1.0.1] - 2026-07-15
 ### Fixed
 - 🐛 Corrige tag de imagen base: `keitarodxs/aia-utils-base:1.0.0` → `v1.0.0`
