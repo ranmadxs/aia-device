@@ -6,6 +6,13 @@ runme:
 
 # RELEASE
 
+## [1.0.3] - 2026-07-15
+### Changed
+- ♻️ Workflow `docker-image.yml`: misma estructura de 3 jobs que aia-mcp
+  (`build` → `publish` → `deploy-nara`). `deploy-nara` corre en el runner
+  self-hosted `[self-hosted, nara]` (pull + docker run con runtime nvidia,
+  sensores y --device /dev/sda). Mantiene versiones PR/main/tag.
+
 ## [1.0.2] - 2026-07-15
 ### Fixed
 - 🐛 Alinea `python` a `^3.13` para coincidir con la imagen base

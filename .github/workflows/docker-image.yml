@@ -1,7 +1,7 @@
 name: Docker Image Publish
 
-# Copiado y adaptado del workflow de aia-utils (keitarodxs/aia-utils-base).
-# La imagen que se publica aquí es la que luego se instala/despliega en nara.
+# Estructura de 3 jobs (build -> publish -> deploy-nara) copiada de aia-mcp.
+# La imagen que se publica aquí es la que luego se despliega en nara.
 on:
   pull_request:
   push:
@@ -10,18 +10,15 @@ on:
     tags:
       - "v*.*.*"
 
-jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
+# ── Build: construye la imagen (SIN push) ──────────────────────────────────
+build:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v7
     - name: Set docker tag version
       # - Tag (vX.Y.Z): usa el nombre del tag tal cual.
       # - Merge a main (push a main): usa la versión del pyproject.toml
-      #   (poetry version --short), ej. 1.0.0. Así al mezclar el PR se publica
+      #   (poetry version --short), ej. 1.0.3. Así al mezclar el PR se publica
       #   la imagen release con el tag de la versión del paquete.
       # - PR: usa el nombre de rama sanitizado (ej. feat-nara-monitor) para
       #   construir sin tag de release. (Bloque temporal: se saca cuando funcione.)
@@ -43,15 +40,67 @@ jobs:
       run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-    - name: Build & Push to Docker Hub
-      # Mismo action que aia-utils: opspresso/action-docker con BUILDX.
-      uses: opspresso/action-docker@master
+    - name: Build image (no push)
+      run: |
+        docker build -t keitarodxs/aia-device:${{ env.RELEASE_VERSION }} .
+    - name: Save image to artifact
+      run: |
+        mkdir -p /tmp/image
+        docker save keitarodxs/aia-device:${{ env.RELEASE_VERSION }} | gzip > /tmp/image/aia-device.tar.gz
+    - name: Upload image artifact
+      uses: actions/upload-artifact@v7
       with:
-          args: --docker
+        name: aia-device-image
+        path: /tmp/image/aia-device.tar.gz
+
+# ── Publish: sube la imagen a Docker Hub ───────────────────────────────────
+publish:
+  needs: build
+  runs-on: ubuntu-latest
+  steps:
+    - name: Download image artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: aia-device-image
+        path: /tmp/image
+    - name: Load image
+      run: docker load < /tmp/image/aia-device.tar.gz
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Tag and push
+      run: |
+        TAG="${{ env.RELEASE_VERSION }}"
+        docker tag keitarodxs/aia-device:$TAG keitarodxs/aia-device:latest
+        docker push keitarodxs/aia-device:$TAG
+        docker push keitarodxs/aia-device:latest
+        docker logout
+
+# ── Despliegue continuo en nara (best-effort) ───────────────────────────────
+# Corre DIRECTAMENTE en el self-hosted runner `nara` (sin SSH). El build de la
+# imagen ocurre arriba en los runners de GitHub; aquí solo se hace pull y up
+# de la imagen ya publicada. Monta sensores/RAPL (--pid host, /sys), nvidia
+# (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl.
+deploy-nara:
+  needs: publish
+  runs-on: [self-hosted, nara]
+  continue-on-error: true
+  timeout-minutes: 10
+  steps:
+    - name: Desplegar con docker run en nara
       env:
-          USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          TAG_NAME: ${{ env.RELEASE_VERSION }}
-          BUILDX: "true"
-          PLATFORMS: "linux/amd64"
-          IMAGE_NAME: "keitarodxs/aia-device"
+        AIA_DEVICE_TAG: ${{ github.ref_name }}
+      run: |
+        set -e
+        IMAGE="keitarodxs/aia-device:${AIA_DEVICE_TAG}"
+        docker pull "$IMAGE"
+        docker stop nara-monitor 2>/dev/null || true
+        docker rm nara-monitor 2>/dev/null || true
+        docker run -d --name nara-monitor --restart unless-stopped \
+          --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all \
+          -p 9006:9006 \
+          -v /run/nvidia:/run/nvidia:ro \
+          -v /sys:/sys:ro \
+          --device /dev/sda \
+          --pid host \
+          "$IMAGE"
+        echo "Despliegue en nara completado (imagen: $IMAGE)"
