@@ -6,6 +6,11 @@ runme:
 
 # RELEASE
 
+## [1.0.5] - 2026-07-16
+### Fixed
+- 🐛 Net: `default_iface` quedaba None. `/proc/net/route` reporta la default
+  route con flags 0003 (RTF_UP|RTF_GATEWAY), no 0002; se aceptan ambos.
+
 ## [1.0.4] - 2026-07-16
 ### Fixed
 - 🐛 Red: el contenedor no veía las interfaces de nara. `deploy-nara` ahora usa

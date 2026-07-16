@@ -33,8 +33,10 @@ def _default_iface() -> str | None:
             next(f)  # header
             for line in f:
                 parts = line.split()
-                # Destination 00000000 + Flag 0002 (RTF_GATEWAY) => default
-                if parts[1] == "00000000" and parts[3] == "0002":
+                # Destination 00000000 (0.0.0.0) + flags con RTF_UP|RTF_GATEWAY
+                # (0x001 = UP, 0x002 = GATEWAY => 0x003). Algunos kernels reportan
+                # solo 0x002; aceptamos ambos para robustez.
+                if parts[1] == "00000000" and parts[3] in ("0002", "0003"):
                     idx = int(parts[0])
                     return _iface_name(idx)
     except OSError as e:
