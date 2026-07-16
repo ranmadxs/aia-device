@@ -3,36 +3,179 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>nara monitor</title>
+  <title>nara // SYSTEM MONITOR</title>
   <style>
-    :root { color-scheme: dark; }
-    body { font-family: ui-monospace, Menlo, Consolas, monospace; background:#0d1117; color:#c9d1d9; margin:0; padding:16px; }
-    h1 { font-size:18px; margin:0 0 12px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
-    .card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:12px; }
-    .card h2 { font-size:14px; margin:0 0 8px; color:#58a6ff; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    td { padding:2px 4px; }
-    td.k { color:#8b949e; }
-    td.v { text-align:right; font-weight:bold; }
-    .na { color:#6e7681; }
-    .ok { color:#3fb950; }
-    .warn { color:#d29922; }
-    .bad { color:#f85149; }
-    #ts { color:#6e7681; font-size:12px; margin-bottom:8px; }
+    :root {
+      --bg: #05080d;
+      --panel: #0a1018;
+      --panel-2: #0d141d;
+      --line: #1c2a38;
+      --line-bright: #2f4a63;
+      --txt: #c7d6e0;
+      --txt-dim: #5f7488;
+      --accent: #36e0ff;     /* cian UEFI */
+      --accent-2: #ffb000;   /* ámbar */
+      --green: #3fe07a;
+      --red: #ff5a5a;
+      --grid: rgba(54,224,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background:
+        radial-gradient(1200px 600px at 50% -10%, #0b1622 0%, var(--bg) 60%),
+        var(--bg);
+      color: var(--txt);
+      font-family: "SFMono-Regular", "JetBrains Mono", "Consolas", ui-monospace, monospace;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      min-height: 100vh;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #0b121b, #070b11);
+    }
+    .topbar .brand { color: var(--accent); font-weight: 700; letter-spacing: 2px; }
+    .topbar .brand b { color: var(--accent-2); }
+    .topbar .clock { color: var(--txt-dim); }
+    .topbar .status { color: var(--green); }
+    .topbar .status::before {
+      content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); margin-right: 6px; box-shadow: 0 0 8px var(--green);
+    }
+    .wrap { padding: 16px; max-width: 1280px; margin: 0 auto; }
+    .grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 12px 14px;
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(54,224,255,0.03), 0 2px 10px rgba(0,0,0,0.4);
+    }
+    .panel::before {
+      content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
+      background: linear-gradient(var(--accent), transparent);
+      opacity: 0.6;
+    }
+    .panel h2 {
+      margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: var(--accent); text-transform: uppercase;
+      border-bottom: 1px dashed var(--line); padding-bottom: 6px;
+    }
+    .panel h2 .tag { float: right; color: var(--txt-dim); font-weight: 400; letter-spacing: 1px; }
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 3px 2px; border-bottom: 1px solid rgba(28,42,56,0.5); }
+    td.k { color: var(--txt-dim); }
+    td.v { text-align: right; font-weight: 700; color: var(--txt); }
+    .na { color: var(--txt-dim); }
+    .big { font-size: 26px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+    .big .u { font-size: 12px; color: var(--txt-dim); margin-left: 4px; }
+    .sub { color: var(--txt-dim); font-size: 11px; margin-top: 2px; }
+    .bar { height: 6px; background: #0a121b; border: 1px solid var(--line); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    canvas { width: 100%; height: 150px; display: block; }
+    .legend { display: flex; gap: 14px; margin-top: 6px; font-size: 11px; color: var(--txt-dim); }
+    .legend i { display: inline-block; width: 10px; height: 3px; margin-right: 5px; vertical-align: middle; }
+    .foot { color: var(--txt-dim); font-size: 11px; text-align: center; padding: 14px; }
+    @media (max-width: 900px) {
+      .col-3,.col-4,.col-6,.col-8 { grid-column: span 12; }
+    }
   </style>
 </head>
 <body>
-  <h1>nara monitor <span id="ts"></span></h1>
-  <div class="grid">
-    <div class="card"><h2>CPU</h2><table id="cpu"></table></div>
-    <div class="card"><h2>GPU (RTX 3060)</h2><table id="gpu"></table></div>
-    <div class="card"><h2>Total Watts</h2><table id="power"></table></div>
-    <div class="card"><h2>RAM</h2><table id="ram"></table></div>
-    <div class="card"><h2>Disco (/)</h2><table id="disk"></table></div>
-    <div class="card"><h2>Temperaturas</h2><table id="temps"></table></div>
-    <div class="card" style="grid-column:1/-1"><h2>Red</h2><table id="net"></table></div>
+  <div class="topbar">
+    <div class="brand">NARA <b>//</b> SYSTEM MONITOR</div>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="status">ONLINE</div>
   </div>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- POWER TOTAL -->
+      <div class="panel col-3">
+        <h2>Total Watts <span class="tag">CPU+GPU</span></h2>
+        <div class="big" id="pw-total">--<span class="u">W</span></div>
+        <div class="sub" id="pw-break">CPU -- · GPU --</div>
+      </div>
+      <!-- CPU -->
+      <div class="panel col-3">
+        <h2>CPU <span class="tag" id="cpu-meta">--</span></h2>
+        <div class="big" id="cpu-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="cpu-bar" style="width:0%"></i></div>
+        <div class="sub" id="cpu-sub">load -- · temp --</div>
+      </div>
+      <!-- GPU -->
+      <div class="panel col-3">
+        <h2>GPU <span class="tag">RTX 3060</span></h2>
+        <div class="big" id="gpu-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="gpu-bar" style="width:0%"></i></div>
+        <div class="sub" id="gpu-sub">VRAM -- · -- W · --°C</div>
+      </div>
+      <!-- RAM -->
+      <div class="panel col-3">
+        <h2>RAM <span class="tag" id="ram-meta">--</span></h2>
+        <div class="big" id="ram-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="ram-bar" style="width:0%"></i></div>
+        <div class="sub" id="ram-sub">-- / -- GB</div>
+      </div>
+
+      <!-- POWER HISTORY -->
+      <div class="panel col-6">
+        <h2>Consumo de Potencia <span class="tag">W · histórico</span></h2>
+        <canvas id="chart-power"></canvas>
+        <div class="legend">
+          <span><i style="background:#36e0ff"></i>CPU</span>
+          <span><i style="background:#ffb000"></i>GPU</span>
+          <span><i style="background:#3fe07a"></i>Total</span>
+        </div>
+      </div>
+      <!-- TEMPS -->
+      <div class="panel col-6">
+        <h2>Temperaturas <span class="tag">°C</span></h2>
+        <table id="tbl-temps"></table>
+      </div>
+
+      <!-- CPU / GPU USAGE HISTORY -->
+      <div class="panel col-6">
+        <h2>Uso CPU / GPU <span class="tag">% · histórico</span></h2>
+        <canvas id="chart-usage"></canvas>
+        <div class="legend">
+          <span><i style="background:#36e0ff"></i>CPU</span>
+          <span><i style="background:#ffb000"></i>GPU</span>
+        </div>
+      </div>
+      <!-- RAM HISTORY -->
+      <div class="panel col-6">
+        <h2>Uso de RAM <span class="tag">% · histórico</span></h2>
+        <canvas id="chart-ram"></canvas>
+        <div class="legend"><span><i style="background:#3fe07a"></i>RAM %</span></div>
+      </div>
+
+      <!-- DISK -->
+      <div class="panel col-4">
+        <h2>Disco <span class="tag">/</span></h2>
+        <table id="tbl-disk"></table>
+      </div>
+      <!-- NET -->
+      <div class="panel col-8">
+        <h2>Red <span class="tag" id="net-default">--</span></h2>
+        <table id="tbl-net"></table>
+      </div>
+    </div>
+    <div class="foot">nara-monitor · refresh 1.5s · datos en vivo del host</div>
+  </div>
+
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

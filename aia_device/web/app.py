@@ -18,5 +18,10 @@ def metrics():
     return jsonify(monitor.snapshot())
 
 
+@app.route("/api/history")
+def history():
+    return jsonify(monitor.history())
+
+
 def create_app() -> Flask:
     return app

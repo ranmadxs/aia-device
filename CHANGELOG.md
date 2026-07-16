@@ -6,6 +6,13 @@ runme:
 
 # RELEASE
 
+## [1.0.9] - 2026-07-16
+### Changed
+- 🎨 Rediseño del dashboard con estética BIOS/UEFI (paneles, acentos cian/ámbar,
+  barras de uso, topbar con reloj y estado ONLINE).
+- 📈 Gráficos históricos en canvas: consumo de potencia (CPU/GPU/Total), uso de
+  CPU/GPU y uso de RAM. Nuevo endpoint `/api/history` con buffer rodante (~3 min).
+
 ## [1.0.8] - 2026-07-16
 ### Fixed
 - 🐛 Power CPU (RAPL): `--cap-add SYS_RAWIO` no basta; powercap/sysfs requiere
