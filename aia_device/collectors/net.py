@@ -1,6 +1,4 @@
 """Network collector: ancho de banda RX/TX por interfaz + ruta por defecto."""
-import os
-
 import psutil
 
 from aia_utils.logs_cfg import config_logger
@@ -14,20 +12,11 @@ logger = logging.getLogger(__name__)
 WATCH = ["enp2s0", "wlx0013eff21155", "docker0", "vxlan.calico"]
 
 
-def _iface_name(index: int) -> str | None:
-    """Resuelve el nombre de interfaz desde su índice vía /sys/class/net."""
-    try:
-        for name in os.listdir("/sys/class/net"):
-            with open(f"/sys/class/net/{name}/ifindex") as f:
-                if int(f.read().strip()) == index:
-                    return name
-    except OSError:
-        pass
-    return None
-
-
 def _default_iface() -> str | None:
-    """Lee la ruta por defecto desde /proc/net/route (no depende de `ip`)."""
+    """Lee la ruta por defecto desde /proc/net/route (no depende de `ip`).
+
+    En /proc/net/route la columna 0 es el NOMBRE de la interfaz (no el índice).
+    """
     try:
         with open("/proc/net/route") as f:
             next(f)  # header
@@ -37,8 +26,7 @@ def _default_iface() -> str | None:
                 # (0x001 = UP, 0x002 = GATEWAY => 0x003). Algunos kernels reportan
                 # solo 0x002; aceptamos ambos para robustez.
                 if parts[1] == "00000000" and parts[3] in ("0002", "0003"):
-                    idx = int(parts[0])
-                    return _iface_name(idx)
+                    return parts[0]
     except OSError as e:
         logger.debug(f"/proc/net/route no disponible: {e}")
     return None

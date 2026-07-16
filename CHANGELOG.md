@@ -6,6 +6,12 @@ runme:
 
 # RELEASE
 
+## [1.0.6] - 2026-07-16
+### Fixed
+- 🐛 Net: `default_iface` crasheaba el collector. En `/proc/net/route` la
+  columna 0 es el NOMBRE de la interfaz (no el índice), así que se usa
+  directamente sin `int()` ni resolver ifindex.
+
 ## [1.0.5] - 2026-07-16
 ### Fixed
 - 🐛 Net: `default_iface` quedaba None. `/proc/net/route` reporta la default
