@@ -6,6 +6,14 @@ runme:
 
 # RELEASE
 
+## [1.0.4] - 2026-07-16
+### Fixed
+- 🐛 Red: el contenedor no veía las interfaces de nara. `deploy-nara` ahora usa
+  `--network host` (en vez de solo `--pid host`) y `net.py` lee la ruta por
+  defecto desde `/proc/net/route` (sin depender de `ip`).
+- 🐛 CPU temp: instala `lm-sensors` en el Dockerfile (no venía en la base
+  python:3.13-slim) para que `sensors` exponga `Package id 0`.
+
 ## [1.0.3] - 2026-07-15
 ### Changed
 - ♻️ Workflow `docker-image.yml`: misma estructura de 3 jobs que aia-mcp

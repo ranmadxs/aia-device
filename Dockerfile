@@ -8,6 +8,13 @@
 
 FROM keitarodxs/aia-utils-base:v1.0.0
 
+# Sensores de temperatura (lm-sensors) para CPU vía `sensors`, y iproute2 para
+# `ip` (ruta por defecto). No vienen en python:3.13-slim.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        lm-sensors \
+        iproute2 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # ── Dependencias Python (capa cacheable) ─────────────────────────────────────

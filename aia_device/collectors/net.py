@@ -1,5 +1,5 @@
 """Network collector: ancho de banda RX/TX por interfaz + ruta por defecto."""
-import subprocess
+import os
 
 import psutil
 
@@ -14,23 +14,31 @@ logger = logging.getLogger(__name__)
 WATCH = ["enp2s0", "wlx0013eff21155", "docker0", "vxlan.calico"]
 
 
-def _default_iface() -> str | None:
+def _iface_name(index: int) -> str | None:
+    """Resuelve el nombre de interfaz desde su índice vía /sys/class/net."""
     try:
-        out = subprocess.run(
-            ["ip", "route", "show", "default"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-        for tok in out.stdout.split():
-            if tok == "dev":
-                return None  # el siguiente token es la iface
-        # Forma simple: buscar 'dev <iface>'
-        parts = out.stdout.split()
-        if "dev" in parts:
-            return parts[parts.index("dev") + 1]
-    except (FileNotFoundError, subprocess.TimeoutExpired, IndexError, ValueError) as e:
-        logger.debug(f"ip route no disponible: {e}")
+        for name in os.listdir("/sys/class/net"):
+            with open(f"/sys/class/net/{name}/ifindex") as f:
+                if int(f.read().strip()) == index:
+                    return name
+    except OSError:
+        pass
+    return None
+
+
+def _default_iface() -> str | None:
+    """Lee la ruta por defecto desde /proc/net/route (no depende de `ip`)."""
+    try:
+        with open("/proc/net/route") as f:
+            next(f)  # header
+            for line in f:
+                parts = line.split()
+                # Destination 00000000 + Flag 0002 (RTF_GATEWAY) => default
+                if parts[1] == "00000000" and parts[3] == "0002":
+                    idx = int(parts[0])
+                    return _iface_name(idx)
+    except OSError as e:
+        logger.debug(f"/proc/net/route no disponible: {e}")
     return None
 
 

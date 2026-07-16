@@ -99,7 +99,8 @@ jobs:
   # Corre DIRECTAMENTE en el self-hosted runner `nara` (sin SSH). El build de la
   # imagen ocurre arriba en los runners de GitHub; aquí solo se hace pull y up
   # de la imagen ya publicada. Monta sensores/RAPL (--pid host, /sys), nvidia
-  # (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl.
+  # (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl. Usa --network
+  # host para que el contenedor vea las interfaces reales de nara (wlx..., enp2s0).
   deploy-nara:
     needs: publish
     runs-on: [self-hosted, nara]
@@ -133,7 +134,7 @@ jobs:
         docker rm nara-monitor 2>/dev/null || true
         docker run -d --name nara-monitor --restart unless-stopped \
           --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all \
-          -p 9006:9006 \
+          --network host \
           -v /run/nvidia:/run/nvidia:ro \
           -v /sys:/sys:ro \
           --device /dev/sda \
