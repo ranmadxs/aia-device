@@ -49,6 +49,53 @@ function drawChart(canvas, series, opts = {}) {
   ctx.fillText(String(Math.round(max)) + (opts.unit || ""), 4, 12);
 }
 
+// ── Batería de watts (tope 500W, zonas de color) ───────────────────────────
+function drawBattery(watts) {
+  const canvas = document.getElementById("battery");
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 120, h = canvas.clientHeight || 56;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const MAX = 500;
+  const bx = 4, by = 8, bw = w - 22, bh = h - 16;
+  const lvl = Math.max(0, Math.min(MAX, watts || 0)) / MAX;
+
+  // color por zona
+  let color = "#36e0ff"; // azul < 200
+  if (watts >= 400) color = "#ff5a5a";       // rojo 400-500
+  else if (watts >= 200) color = "#ffb000";  // naranja 200-400
+
+  // cuerpo
+  ctx.strokeStyle = "rgba(54,224,255,0.5)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(bx, by, bw, bh);
+  // terminal
+  ctx.fillStyle = "rgba(54,224,255,0.5)";
+  ctx.fillRect(bx + bw, by + bh / 2 - 6, 8, 12);
+
+  // zonas de fondo
+  const z = (a, b, c) => { ctx.fillStyle = c; ctx.fillRect(bx + 1, by + 1, (bw - 2) * (b / MAX), bh - 2); };
+  z(0, 200, "rgba(54,224,255,0.06)");
+  z(200, 400, "rgba(255,176,0,0.06)");
+  z(400, 500, "rgba(255,90,90,0.08)");
+
+  // nivel
+  ctx.fillStyle = color;
+  ctx.shadowColor = color; ctx.shadowBlur = 8;
+  ctx.fillRect(bx + 1, by + 1, (bw - 2) * lvl, bh - 2);
+  ctx.shadowBlur = 0;
+
+  // texto
+  ctx.fillStyle = color;
+  ctx.font = "bold 13px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText(`${Math.round(watts || 0)}W`, bx + bw / 2, by + bh / 2 + 4);
+  ctx.textAlign = "left";
+}
+
 // ── Render de paneles (estado actual) ───────────────────────────────────────
 function renderLive(m) {
   const p = m.power || {};
@@ -56,6 +103,7 @@ function renderLive(m) {
     `${fmt(p.total_w, "")}<span class="u">W</span>`;
   document.getElementById("pw-break").textContent =
     `CPU ${fmt(p.cpu_w, " W")} · GPU ${fmt(p.gpu_w, " W")}`;
+  drawBattery(p.total_w);
 
   const c = m.cpu || {};
   document.getElementById("cpu-meta").textContent = `${c.cores || 0}c/${c.threads || 0}t`;

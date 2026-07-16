@@ -6,6 +6,12 @@ runme:
 
 # RELEASE
 
+## [1.0.10] - 2026-07-16
+### Changed
+- 🖼️ Marcas de agua SVG (CPU/GPU/RAM) en sus paneles, estilo placa madre.
+- 🔋 Indicador de batería de watts con tope 500W y zonas de color: azul <200W,
+  naranja 200–400W, rojo 400–500W.
+
 ## [1.0.9] - 2026-07-16
 ### Changed
 - 🎨 Rediseño del dashboard con estética BIOS/UEFI (paneles, acentos cian/ámbar,
