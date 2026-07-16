@@ -6,7 +6,7 @@
 # El runtime nvidia se registra en el host para exponer nvidia-smi a la GPU.
 # ─────────────────────────────────────────────────────────────────────────────
 
-FROM keitarodxs/aia-utils-base:1.0.0
+FROM keitarodxs/aia-utils-base:v1.0.0
 
 WORKDIR /app
 
