@@ -14,8 +14,8 @@ jobs:
 
   # ── Build: construye la imagen (SIN push) ──────────────────────────────────
   build:
-  runs-on: ubuntu-latest
-  steps:
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v7
     - name: Set docker tag version
       # - Tag (vX.Y.Z): usa el nombre del tag tal cual.
@@ -55,11 +55,11 @@ jobs:
         name: aia-device-image
         path: /tmp/image/aia-device.tar.gz
 
-# ── Publish: sube la imagen a Docker Hub ───────────────────────────────────
-publish:
-  needs: build
-  runs-on: ubuntu-latest
-  steps:
+  # ── Publish: sube la imagen a Docker Hub ───────────────────────────────────
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
     - name: Download image artifact
       uses: actions/download-artifact@v8
       with:
@@ -82,12 +82,17 @@ publish:
 # imagen ocurre arriba en los runners de GitHub; aquí solo se hace pull y up
 # de la imagen ya publicada. Monta sensores/RAPL (--pid host, /sys), nvidia
 # (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl.
-deploy-nara:
-  needs: publish
-  runs-on: [self-hosted, nara]
-  continue-on-error: true
-  timeout-minutes: 10
-  steps:
+  # ── Despliegue continuo en nara (best-effort) ───────────────────────────────
+  # Corre DIRECTAMENTE en el self-hosted runner `nara` (sin SSH). El build de la
+  # imagen ocurre arriba en los runners de GitHub; aquí solo se hace pull y up
+  # de la imagen ya publicada. Monta sensores/RAPL (--pid host, /sys), nvidia
+  # (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl.
+  deploy-nara:
+    needs: publish
+    runs-on: [self-hosted, nara]
+    continue-on-error: true
+    timeout-minutes: 10
+    steps:
     - name: Desplegar con docker run en nara
       env:
         AIA_DEVICE_TAG: ${{ github.ref_name }}
