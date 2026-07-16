@@ -6,6 +6,11 @@ runme:
 
 # RELEASE
 
+## [1.0.11] - 2026-07-16
+### Fixed
+- 📦 Los SVGs de marca de agua ahora se incluyen en el wheel (poetry include) y
+  se sirven desde el paquete (`static_folder` explícito). Antes daban 404.
+
 ## [1.0.10] - 2026-07-16
 ### Changed
 - 🖼️ Marcas de agua SVG (CPU/GPU/RAM) en sus paneles, estilo placa madre.

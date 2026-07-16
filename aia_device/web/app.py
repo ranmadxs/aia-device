@@ -5,7 +5,8 @@ from flask import Flask, jsonify, render_template
 
 from aia_device.monitor import monitor
 
-app = Flask(__name__)
+_HERE = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, static_folder=os.path.join(_HERE, "static"))
 
 
 @app.route("/")
