@@ -1,5 +1,7 @@
 name: Docker Image Publish
 
+# Copiado y adaptado del workflow de aia-utils (keitarodxs/aia-utils-base).
+# La imagen que se publica aquí es la que luego se instala/despliega en nara.
 on:
   pull_request:
   push:
@@ -41,25 +43,15 @@ jobs:
       run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
     - name: Build & Push to Docker Hub
-      uses: docker/build-push-action@v4
+      # Mismo action que aia-utils: opspresso/action-docker con BUILDX.
+      uses: opspresso/action-docker@master
       with:
-          context: .
-          push: true
-          tags: keitarodxs/aia_device:${{ env.RELEASE_VERSION }}
-          platforms: linux/amd64
+          args: --docker
       env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           TAG_NAME: ${{ env.RELEASE_VERSION }}
           BUILDX: "true"
+          PLATFORMS: "linux/amd64"
           IMAGE_NAME: "keitarodxs/aia-device"

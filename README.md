@@ -27,18 +27,26 @@ poetry run daemon
 
 ## Docker (en nara, x86_64)
 ```sh
-# build
+# build local (opcional, el CI ya publica la imagen)
 docker build . --platform linux/amd64 -t keitarodxs/aia_device:dev
 
-# run (runtime nvidia + sensores del host)
+# instalar/desplegar en nara (la imagen la publica el workflow docker-image.yml)
+docker pull keitarodxs/aia_device:<tag>
+
 docker run -d --name nara-monitor --restart=always \
   --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all \
   -p 9006:9006 \
   -v /run/nvidia:/run/nvidia:ro \
   -v /sys:/sys:ro \
+  --device /dev/sda \
   --pid host \
-  keitarodxs/aia_device:dev
+  keitarodxs/aia_device:<tag>
 ```
+- `--runtime=nvidia` + `-v /run/nvidia:/run/nvidia:ro`: expone `nvidia-smi` a la GPU.
+- `-v /sys:/sys:ro` + `--pid host`: expone RAPL (`/sys/class/powercap/...`) y `sensors`.
+- `--device /dev/sda`: permite `smartctl -A /dev/sda` para la temp del disco.
+- El contenedor corre como root, requisito para `smartctl` y RAPL.
+
 Desde el Mac: `http://nara:9006`
 
 ## CI / Release
