@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>nara monitor</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: ui-monospace, Menlo, Consolas, monospace; background:#0d1117; color:#c9d1d9; margin:0; padding:16px; }
+    h1 { font-size:18px; margin:0 0 12px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
+    .card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:12px; }
+    .card h2 { font-size:14px; margin:0 0 8px; color:#58a6ff; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    td { padding:2px 4px; }
+    td.k { color:#8b949e; }
+    td.v { text-align:right; font-weight:bold; }
+    .na { color:#6e7681; }
+    .ok { color:#3fb950; }
+    .warn { color:#d29922; }
+    .bad { color:#f85149; }
+    #ts { color:#6e7681; font-size:12px; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <h1>nara monitor <span id="ts"></span></h1>
+  <div class="grid">
+    <div class="card"><h2>CPU</h2><table id="cpu"></table></div>
+    <div class="card"><h2>GPU (RTX 3060)</h2><table id="gpu"></table></div>
+    <div class="card"><h2>Total Watts</h2><table id="power"></table></div>
+    <div class="card"><h2>RAM</h2><table id="ram"></table></div>
+    <div class="card"><h2>Disco (/)</h2><table id="disk"></table></div>
+    <div class="card"><h2>Temperaturas</h2><table id="temps"></table></div>
+    <div class="card" style="grid-column:1/-1"><h2>Red</h2><table id="net"></table></div>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

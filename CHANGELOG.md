@@ -6,7 +6,24 @@ runme:
 
 # RELEASE
 
-```sh {"id":"01HN76WB0CNT1DFH3J3KY1GW35"}
+## [1.0.0] - 2026-07-15
+### ⚠️ BREAKING CHANGE (refactor total → nara-monitor)
+- `aia-device` deja de ser el servicio de pantalla ILI9486/Kafka y se convierte
+  en un monitor en tiempo real del host `nara`.
+- **Borrado**: `driver/` (ILI9486), `transform.py`, `deviceSvc.py`, `resources/images`.
+- **Nuevo**: `collectors/` (cpu, gpu, power, ram, disk, net, temps), `monitor.py`
+  (orquestador con cache ~1.5 s) y `web/` (Flask: `/` dashboard + `/api/metrics`).
+- **Dependencias**: se cambia Pillow/numpy/scipy/scikit-image/pymongo por
+  `Flask` + `psutil` (poetry se mantiene como package manager).
+- **Dockerfile**: base `keitarodxs/aia-utils-base:1.0.0`, instalación de deps con
+  `poetry export` + `uv pip install --system` (patrón aia-mcp), build `linux/amd64`.
+- **Workflow** `docker-image.yml`: triggers `pull_request` / `push main` / `tag v*.*.*`,
+  multi-plataforma `linux/amd64`, release en merge a main. El trigger de PR es
+  temporal (se saca cuando funcione en nara).
+- Métricas: CPU %, load, cores/threads, temp; GPU %/VRAM/watts/temp/límite;
+  Total Watts (RAPL+GPU); RAM; disco uso/I/O/temp; red RX/TX por interfaz;
+  temperaturas agregadas.
+
 [0.2.13] 13-ago-2024
 - 🔄 Update aia-utils=0.3.3
 
