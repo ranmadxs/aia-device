@@ -6,6 +6,11 @@ runme:
 
 # RELEASE
 
+## [1.0.12] - 2026-07-16
+### Fixed
+- 📦 Corrige `tool.poetry.include` (debe ser array, no tabla) que rompía el
+  build del wheel en 1.0.11.
+
 ## [1.0.11] - 2026-07-16
 ### Fixed
 - 📦 Los SVGs de marca de agua ahora se incluyen en el wheel (poetry include) y

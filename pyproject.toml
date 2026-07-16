@@ -1,14 +1,14 @@
 [tool.poetry]
 name = "aia-device"
-version = "1.0.11"
+version = "1.0.12"
 description = "nara host real-time monitor (CPU/GPU/RAM/disk/net/temps + total watts)"
 authors = ["Edgar Rodrigo Sanchez De Gracia <grineldosanchez@yahoo.es>"]
 readme = "README.md"
 packages = [{include = "aia_device"}]
-
-[tool.poetry.include]
-"aia_device/web/templates/**/*" = {format = ["sdist", "wheel"]}
-"aia_device/web/static/**/*" = {format = ["sdist", "wheel"]}
+include = [
+    { path = "aia_device/web/templates", format = ["sdist", "wheel"] },
+    { path = "aia_device/web/static", format = ["sdist", "wheel"] },
+]
 
 [tool.poetry.dependencies]
 python = "^3.13"
