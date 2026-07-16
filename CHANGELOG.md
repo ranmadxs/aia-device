@@ -6,6 +6,12 @@ runme:
 
 # RELEASE
 
+## [1.0.8] - 2026-07-16
+### Fixed
+- 🐛 Power CPU (RAPL): `--cap-add SYS_RAWIO` no basta; powercap/sysfs requiere
+  remontar sysfs. `deploy-nara` usa `--privileged` (con --network/--pid host ya
+  es coherente para un monitor de host) para exponer `energy_uj` y el consumo CPU.
+
 ## [1.0.7] - 2026-07-16
 ### Fixed
 - 🐛 Power CPU (RAPL): el contenedor no podía leer

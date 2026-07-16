@@ -135,7 +135,7 @@ jobs:
         docker run -d --name nara-monitor --restart unless-stopped \
           --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all \
           --network host \
-          --cap-add SYS_RAWIO \
+          --privileged \
           -v /run/nvidia:/run/nvidia:ro \
           -v /sys:/sys:ro \
           --device /dev/sda \
