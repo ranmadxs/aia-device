@@ -10,8 +10,10 @@ on:
     tags:
       - "v*.*.*"
 
-# ── Build: construye la imagen (SIN push) ──────────────────────────────────
-build:
+jobs:
+
+  # ── Build: construye la imagen (SIN push) ──────────────────────────────────
+  build:
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v7
