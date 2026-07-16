@@ -6,6 +6,12 @@ runme:
 
 # RELEASE
 
+## [1.0.7] - 2026-07-16
+### Fixed
+- 🐛 Power CPU (RAPL): el contenedor no podía leer
+  `/sys/class/powercap/.../energy_uj` (requiere CAP_SYS_RAWIO). `deploy-nara`
+  ahora agrega `--cap-add SYS_RAWIO` para exponer el consumo de CPU.
+
 ## [1.0.6] - 2026-07-16
 ### Fixed
 - 🐛 Net: `default_iface` crasheaba el collector. En `/proc/net/route` la
