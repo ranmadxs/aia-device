@@ -76,23 +76,18 @@ jobs:
             SAFE=$(echo "${HEAD_REF:-$REF_NAME}" | tr '/' '-')
             echo "RELEASE_VERSION=$SAFE" >> "$GITHUB_ENV"
           fi
-    - name: Load image
-      run: docker load < /tmp/image/aia-device.tar.gz
-    - name: Login to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Tag and push
-      run: |
-        TAG="${{ env.RELEASE_VERSION }}"
-        docker tag keitarodxs/aia-device:$TAG keitarodxs/aia-device:latest
-        docker push keitarodxs/aia-device:$TAG
-        docker push keitarodxs/aia-device:latest
-        docker logout
+      - name: Load image
+        run: docker load < /tmp/image/aia-device.tar.gz
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Tag and push
+        run: |
+          TAG="${{ env.RELEASE_VERSION }}"
+          docker tag keitarodxs/aia-device:$TAG keitarodxs/aia-device:latest
+          docker push keitarodxs/aia-device:$TAG
+          docker push keitarodxs/aia-device:latest
+          docker logout
 
-# ── Despliegue continuo en nara (best-effort) ───────────────────────────────
-# Corre DIRECTAMENTE en el self-hosted runner `nara` (sin SSH). El build de la
-# imagen ocurre arriba en los runners de GitHub; aquí solo se hace pull y up
-# de la imagen ya publicada. Monta sensores/RAPL (--pid host, /sys), nvidia
-# (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl.
   # ── Despliegue continuo en nara (best-effort) ───────────────────────────────
   # Corre DIRECTAMENTE en el self-hosted runner `nara` (sin SSH). El build de la
   # imagen ocurre arriba en los runners de GitHub; aquí solo se hace pull y up
