@@ -106,12 +106,28 @@ jobs:
     continue-on-error: true
     timeout-minutes: 10
     steps:
-    - name: Desplegar con docker run en nara
+    - name: Set docker tag version
+      # La env no se hereda entre jobs: recalculamos RELEASE_VERSION aquí.
+      # En PR, github.ref_name es "N/merge"; por eso usamos la rama sanitizada
+      # (HEAD_REF) que coincide con el tag que publicó `publish`.
       env:
-        AIA_DEVICE_TAG: ${{ github.ref_name }}
+        REF_TYPE: ${{ github.ref_type }}
+        REF_NAME: ${{ github.ref_name }}
+        REF: ${{ github.ref }}
+        HEAD_REF: ${{ github.head_ref }}
+      run: |
+        if [ "$REF_TYPE" = "tag" ]; then
+          echo "RELEASE_VERSION=$REF_NAME" >> "$GITHUB_ENV"
+        elif [ "$REF" = "refs/heads/main" ]; then
+          echo "RELEASE_VERSION=$(poetry version --short)" >> "$GITHUB_ENV"
+        else
+          SAFE=$(echo "${HEAD_REF:-$REF_NAME}" | tr '/' '-')
+          echo "RELEASE_VERSION=$SAFE" >> "$GITHUB_ENV"
+        fi
+    - name: Desplegar con docker run en nara
       run: |
         set -e
-        IMAGE="keitarodxs/aia-device:${AIA_DEVICE_TAG}"
+        IMAGE="keitarodxs/aia-device:${RELEASE_VERSION}"
         docker pull "$IMAGE"
         docker stop nara-monitor 2>/dev/null || true
         docker rm nara-monitor 2>/dev/null || true
