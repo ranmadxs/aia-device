@@ -6,6 +6,11 @@ runme:
 
 # RELEASE
 
+## [1.0.1] - 2026-07-15
+### Fixed
+- 🐛 Corrige tag de imagen base: `keitarodxs/aia-utils-base:1.0.0` → `v1.0.0`
+  (el tag sin `v` no existe en Docker Hub; buildx fallaba con `not found`).
+
 ## [1.0.0] - 2026-07-15
 ### ⚠️ BREAKING CHANGE (refactor total → nara-monitor)
 - `aia-device` deja de ser el servicio de pantalla ILI9486/Kafka y se convierte
