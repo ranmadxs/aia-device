@@ -6,7 +6,11 @@ runme:
 
 # RELEASE
 
-## [2.0.0.a3] - 2026-07-17
+## [2.0.0] - 2026-07-17
+### Fixed
+- 🐛 Deadlock en `Monitor` por `threading.Lock` no reentrant (se adquiría dos
+  veces en `snapshot()` → `_persist_history_entry`), lo que dejaba
+  `/api/metrics` colgado y el dashboard sin datos. Cambiado a `RLock`.
 ### Added
 - 🗂️ Historial persistente por día en `/data/history` con selector `1h/1d` y
   endpoint `/api/history_dates`.
