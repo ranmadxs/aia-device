@@ -179,14 +179,6 @@ function renderHistory(hist) {
   drawChart(document.getElementById("chart-ram"),
     [{ color: "#3fe07a", data: ramU }],
     { unit: "%", max: 100 });
-}
-
-// ── Loop ────────────────────────────────────────────────────────────────────
-function clock() {
-  document.getElementById("clock").textContent = new Date().toLocaleTimeString();
-}
-
-async function tick() {
 
   // historial VRAM con marcas de hora
   const vram = hist.map(p => p.gpu_vram);
@@ -198,6 +190,14 @@ async function tick() {
     const d = new Date(times[times.length - 1] * 1000);
     document.getElementById("vram-date").textContent = d.toLocaleDateString();
   }
+}
+
+// ── Loop ────────────────────────────────────────────────────────────────────
+function clock() {
+  document.getElementById("clock").textContent = new Date().toLocaleTimeString();
+}
+
+async function tick() {
   try {
     const [mr, hr] = await Promise.all([fetch("/api/metrics"), fetch("/api/history")]);
     const m = await mr.json();
