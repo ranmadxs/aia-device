@@ -137,6 +137,7 @@ jobs:
           --privileged \
           -v /run/nvidia:/run/nvidia:ro \
           -v /sys:/sys:ro \
+          -v /data:/data \
           --device /dev/sda \
           --pid host \
           "$IMAGE"
