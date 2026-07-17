@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" stroke="#36e0ff" stroke-width="3" stroke-opacity="0.5" stroke-linejoin="round">
+  <rect x="34" y="34" width="52" height="52" rx="6"/>
+  <rect x="48" y="48" width="24" height="24" rx="3"/>
+  <text x="60" y="64" font-size="13" fill="#36e0ff" fill-opacity="0.6" stroke="none" text-anchor="middle" font-family="monospace" font-weight="bold">CPU</text>
+  <g stroke-width="3">
+    <line x1="42" y1="22" x2="42" y2="34"/><line x1="54" y1="22" x2="54" y2="34"/><line x1="66" y1="22" x2="66" y2="34"/><line x1="78" y1="22" x2="78" y2="34"/>
+    <line x1="42" y1="86" x2="42" y2="98"/><line x1="54" y1="86" x2="54" y2="98"/><line x1="66" y1="86" x2="66" y2="98"/><line x1="78" y1="86" x2="78" y2="98"/>
+    <line x1="22" y1="42" x2="34" y2="42"/><line x1="22" y1="54" x2="34" y2="54"/><line x1="22" y1="66" x2="34" y2="66"/><line x1="22" y1="78" x2="34" y2="78"/>
+    <line x1="86" y1="42" x2="98" y2="42"/><line x1="86" y1="54" x2="98" y2="54"/><line x1="86" y1="66" x2="98" y2="66"/><line x1="86" y1="78" x2="98" y2="78"/>
+  </g>
+</svg>

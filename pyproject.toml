@@ -1,28 +1,26 @@
 [tool.poetry]
 name = "aia-device"
-version = "0.2.13"
-description = "Aia device service"
+version = "2.0.0.a3"
+description = "nara host real-time monitor (CPU/GPU/RAM/disk/net/temps + total watts)"
 authors = ["Edgar Rodrigo Sanchez De Gracia <grineldosanchez@yahoo.es>"]
 readme = "README.md"
 packages = [{include = "aia_device"}]
+include = [
+    { path = "aia_device/web/templates", format = ["sdist", "wheel"] },
+    { path = "aia_device/web/static", format = ["sdist", "wheel"] },
+]
 
 [tool.poetry.dependencies]
-python = ">=3.11.2,<3.12"
-Pillow = "^10.2.0"
+python = "^3.13"
 python-dotenv = "^1.0.0"
-coverage = "^7.3.2"
-numpy = "^1.26.2"
-pymongo = "^4.6.1"
-#rpi-gpio = "^0.7.1"
-#spidev = "^3.6"
-scipy = "^1.12.0"
-scikit-image = "^0.22.0"
-aia_utils = "^0.3.3"
+Flask = "^3.0.0"
+psutil = "^5.9.8"
+aia_utils = "^1.0.0"
 
 [tool.pytest.ini_options]
 pythonpath = "aia_device"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"
 pytest-dotenv = "^0.5.2"
 pytest-cov = "^4.0.0"

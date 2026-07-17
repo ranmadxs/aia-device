@@ -1,40 +1,129 @@
 name: Docker Image Publish
 
+# La imagen se construye y se publica SOLO en el job `publish`.
+# El job `build` solo valida que la imagen compila (sin subir nada);
+# `publish` reconstruye y hace el push a Docker Hub. `deploy-nara` luego
+# hace pull de la imagen ya publicada.
 on:
   push:
+    branches:
+      - "main"
     tags:
-      - "*.*.*"
+      - "v*.*.*"
 
 jobs:
 
+  # ── Build: valida que la imagen compila (SIN push, SIN artifact) ──────────
   build:
-
-    runs-on: [self-hosted, linux, arm64, v8]
-
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Set docker tag version
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      # - Tag (vX.Y.Z): usa el nombre del tag tal cual.
+      # - Merge a main (push a main): usa la versión del pyproject.toml
+      #   (poetry version --short), ej. 1.0.3.
+      env:
+        REF_TYPE: ${{ github.ref_type }}
+        REF_NAME: ${{ github.ref_name }}
+        REF: ${{ github.ref }}
+        HEAD_REF: ${{ github.head_ref }}
+      run: |
+        if [ "$REF_TYPE" = "tag" ]; then
+          echo "RELEASE_VERSION=$REF_NAME" >> "$GITHUB_ENV"
+        elif [ "$REF" = "refs/heads/main" ]; then
+          echo "RELEASE_VERSION=$(poetry version --short)" >> "$GITHUB_ENV"
+        else
+          SAFE=$(echo "${HEAD_REF:-$REF_NAME}" | tr '/' '-')
+          echo "RELEASE_VERSION=$SAFE" >> "$GITHUB_ENV"
+        fi
     - name: Test
       run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}          
-    - name: Build & Push to Docker Hub
-      # You may pin to the exact commit or the version.
-      uses: docker/build-push-action@v4
-      with:
-          context: .
-          push: true
-          tags: keitarodxs/aia_device:${{ env.RELEASE_VERSION }}
-          platforms: linux/arm64/v8
+    - name: Build image (no push, no artifact)
+      run: |
+        docker build -t keitarodxs/aia-device:${{ env.RELEASE_VERSION }} .
+
+  # ── Publish: construye y sube la imagen a Docker Hub (único push) ─────────
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set docker tag version
+        # La env no se hereda entre jobs: recalculamos RELEASE_VERSION aquí.
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          REF: ${{ github.ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [ "$REF_TYPE" = "tag" ]; then
+            echo "RELEASE_VERSION=$REF_NAME" >> "$GITHUB_ENV"
+          elif [ "$REF" = "refs/heads/main" ]; then
+            echo "RELEASE_VERSION=$(poetry version --short)" >> "$GITHUB_ENV"
+          else
+            SAFE=$(echo "${HEAD_REF:-$REF_NAME}" | tr '/' '-')
+            echo "RELEASE_VERSION=$SAFE" >> "$GITHUB_ENV"
+          fi
+      - name: Build image
+        run: |
+          docker build -t keitarodxs/aia-device:${{ env.RELEASE_VERSION }} .
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Tag and push
+        run: |
+          TAG="${{ env.RELEASE_VERSION }}"
+          docker tag keitarodxs/aia-device:$TAG keitarodxs/aia-device:latest
+          docker push keitarodxs/aia-device:$TAG
+          docker push keitarodxs/aia-device:latest
+          docker logout
+
+  # ── Despliegue continuo en nara (best-effort) ───────────────────────────────
+  # Corre DIRECTAMENTE en el self-hosted runner `nara` (sin SSH). El build y
+  # push de la imagen ocurren arriba en los runners de GitHub; aquí solo se
+  # hace pull y up de la imagen ya publicada. Monta sensores/RAPL (--pid host,
+  # /sys), nvidia (runtime + /run/nvidia) y el disco (/dev/sda) para smartctl.
+  # Usa --network host para que el contenedor vea las interfaces reales de nara.
+  deploy-nara:
+    needs: publish
+    runs-on: [self-hosted, nara]
+    continue-on-error: true
+    timeout-minutes: 10
+    steps:
+    - name: Set docker tag version
+      # La env no se hereda entre jobs: recalculamos RELEASE_VERSION aquí.
+      # En PR, github.ref_name es "N/merge"; por eso usamos la rama sanitizada
+      # (HEAD_REF) que coincide con el tag que publicó `publish`.
       env:
-          USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          TAG_NAME: ${{ env.RELEASE_VERSION }}
-          BUILDX: "true"
-          IMAGE_NAME: "keitarodxs/aia-device"
+        REF_TYPE: ${{ github.ref_type }}
+        REF_NAME: ${{ github.ref_name }}
+        REF: ${{ github.ref }}
+        HEAD_REF: ${{ github.head_ref }}
+      run: |
+        if [ "$REF_TYPE" = "tag" ]; then
+          echo "RELEASE_VERSION=$REF_NAME" >> "$GITHUB_ENV"
+        elif [ "$REF" = "refs/heads/main" ]; then
+          echo "RELEASE_VERSION=$(poetry version --short)" >> "$GITHUB_ENV"
+        else
+          SAFE=$(echo "${HEAD_REF:-$REF_NAME}" | tr '/' '-')
+          echo "RELEASE_VERSION=$SAFE" >> "$GITHUB_ENV"
+        fi
+    - name: Desplegar con docker run en nara
+      run: |
+        set -e
+        IMAGE="keitarodxs/aia-device:${RELEASE_VERSION}"
+        docker pull "$IMAGE"
+        docker stop nara-monitor 2>/dev/null || true
+        docker rm nara-monitor 2>/dev/null || true
+        docker run -d --name nara-monitor --restart unless-stopped \
+          --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all \
+          --network host \
+          --privileged \
+          -v /run/nvidia:/run/nvidia:ro \
+          -v /sys:/sys:ro \
+          -v /data:/data \
+          --device /dev/sda \
+          --pid host \
+          "$IMAGE"
+        echo "Despliegue en nara completado (imagen: $IMAGE)"

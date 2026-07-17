@@ -4,46 +4,55 @@ runme:
   version: v3
 ---
 
-# aia-device
+# aia-device (nara-monitor)
 
-Natural Languague Understanding
+Monitor en tiempo real del host `nara` (MSI H81M-E33, i3-4150, 8 GB RAM,
+RTX 3060 12 GB, SSD 240 GB). Dashboard web ligero en Flask con refresh ~1.5 s.
 
-```sh {"id":"01HJQ7F9RXZBJJ4YEQA7Q49GYF"}
+## Métricas
+- **CPU**: % uso, load 1/5/15, 2c/4t, temp (lm-sensors → coretemp Package id 0)
+- **GPU**: % uso, VRAM usada/total, watts, temp, límite (nvidia-smi)
+- **Total Watts**: CPU (RAPL) + GPU (nvidia-smi power.draw)
+- **RAM**: usado/total 8 GB, %, temp DIMM (N/A si no hay sensor)
+- **Disco**: uso `/`, I/O MB/s, temp SMART (smartctl)
+- **Red**: RX/TX por interfaz (enp2s0, wlx0013eff21155, internet por default route)
+- **Temperaturas**: CPU/GPU/RAM(N/A)/disco
+
+## Desarrollo local
+```sh
+poetry install
 poetry run daemon
-
-git ls-remote --get-url origin 
-git remote set-url origin git@github_ranmadxs:ranmadxs/aia-device.git
-
-#tags
-git push --tags
+# abrir http://localhost:9006
 ```
 
-```sh {"id":"01HJV2GKHFHRCW2MAYBX6DWF7V"}
-#set var entorno
-export AIA_TAG_DEV=0.2.13
+## Docker (en nara, x86_64)
+```sh
+# build local (opcional, el CI ya publica la imagen)
+docker build . --platform linux/amd64 -t keitarodxs/aia_device:dev
+
+# instalar/desplegar en nara (la imagen la publica el workflow docker-image.yml)
+docker pull keitarodxs/aia_device:<tag>
+
+docker run -d --name nara-monitor --restart=always \
+  --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=all \
+  -p 9006:9006 \
+  -v /run/nvidia:/run/nvidia:ro \
+  -v /sys:/sys:ro \
+  --device /dev/sda \
+  --pid host \
+  keitarodxs/aia_device:<tag>
 ```
+- `--runtime=nvidia` + `-v /run/nvidia:/run/nvidia:ro`: expone `nvidia-smi` a la GPU.
+- `-v /sys:/sys:ro` + `--pid host`: expone RAPL (`/sys/class/powercap/...`) y `sensors`.
+- `--device /dev/sda`: permite `smartctl -A /dev/sda` para la temp del disco.
+- El contenedor corre como root, requisito para `smartctl` y RAPL.
 
-```sh {"id":"01HJQ7F9RXZBJJ4YEQAAH1BXHZ"}
-#build
-docker build . --platform linux/arm64/v8 -t keitarodxs/aia_device:$AIA_TAG_DEV
+Desde el Mac: `http://nara:9006`
 
-#push
-docker push keitarodxs/aia_device:$AIA_TAG_DEV
+## CI / Release
+- `docker-image.yml` construye en PR (tag = rama), en push a `main`
+  (tag = `poetry version --short`) y en tags `v*.*.*`. Plataforma `linux/amd64`.
+- El despliegue en nara monta el volumen persistente `/data` para conservar el
+  historial diario de métricas entre reinicios del contenedor.
+- El trigger de PR es temporal: se saca cuando el monitor funcione en nara.
 
-#go into docker container
-sudo docker exec -ti aia_device bash
-
-#run
-docker run --privileged -d --restart=always -e TZ=America/Santiago -v /home/ranmadxs/aia/aia-device/target:/app/target --net=bridge --name aia_device --env-file .env keitarodxs/aia_device:$AIA_TAG_DEV
-
-```
-
-### Install Img
-
-```sh {"id":"01HJQ7F9RXZBJJ4YEQAAX4XA1Y"}
-docker save -o aia-device_$AIA_VERSION.tar keitarodxs/aia_device:$AIA_TAG_DEV
-
-docker pull keitarodxs/aia_device:$AIA_TAG_DEV
-
-docker load -i aia-device_$AIA_VERSION.tar
-```

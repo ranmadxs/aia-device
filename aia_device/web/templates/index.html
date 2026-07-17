@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>nara // SYSTEM MONITOR</title>
+  <style>
+    :root {
+      --bg: #05080d;
+      --panel: #0a1018;
+      --panel-2: #0d141d;
+      --line: #1c2a38;
+      --line-bright: #2f4a63;
+      --txt: #c7d6e0;
+      --txt-dim: #5f7488;
+      --accent: #36e0ff;     /* cian UEFI */
+      --accent-2: #ffb000;   /* ámbar */
+      --green: #3fe07a;
+      --red: #ff5a5a;
+      --grid: rgba(54,224,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background:
+        radial-gradient(1200px 600px at 50% -10%, #0b1622 0%, var(--bg) 60%),
+        var(--bg);
+      color: var(--txt);
+      font-family: "SFMono-Regular", "JetBrains Mono", "Consolas", ui-monospace, monospace;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      min-height: 100vh;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #0b121b, #070b11);
+    }
+    .topbar .brand { color: var(--accent); font-weight: 700; letter-spacing: 2px; }
+    .topbar .brand b { color: var(--accent-2); }
+    .topbar .clock { color: var(--txt-dim); }
+    .topbar .status { color: var(--green); }
+    .topbar .status::before {
+      content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); margin-right: 6px; box-shadow: 0 0 8px var(--green);
+    }
+    .wrap { padding: 16px; max-width: 1280px; margin: 0 auto; }
+    .grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 12px 14px;
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(54,224,255,0.03), 0 2px 10px rgba(0,0,0,0.4);
+    }
+    .panel::before {
+      content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
+      background: linear-gradient(var(--accent), transparent);
+      opacity: 0.6;
+    }
+    .panel h2 {
+      margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: var(--accent); text-transform: uppercase;
+      border-bottom: 1px dashed var(--line); padding-bottom: 6px;
+    }
+    .panel h2 .tag { float: right; color: var(--txt-dim); font-weight: 400; letter-spacing: 1px; }
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 3px 2px; border-bottom: 1px solid rgba(28,42,56,0.5); }
+    td.k { color: var(--txt-dim); }
+    td.v { text-align: right; font-weight: 700; color: var(--txt); }
+    .na { color: var(--txt-dim); }
+    .big { font-size: 26px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+    .big .u { font-size: 12px; color: var(--txt-dim); margin-left: 4px; }
+    .sub { color: var(--txt-dim); font-size: 11px; margin-top: 2px; }
+    .watermark {
+      position: absolute; right: 10px; bottom: 8px; width: 64px; height: 64px;
+      opacity: 0.18; pointer-events: none; filter: drop-shadow(0 0 6px currentColor);
+    }
+    .watermark img { width: 100%; height: 100%; display: block; }
+    .panel.pw { overflow: hidden; }
+    .battery-wrap { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+    .battery-wrap canvas { width: 120px; height: 56px; flex: 0 0 auto; }
+    .battery-zones { font-size: 10px; color: var(--txt-dim); line-height: 1.5; }
+    .battery-zones b { font-weight: 700; }
+    .bar { height: 6px; background: #0a121b; border: 1px solid var(--line); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .history-controls { display: flex; align-items: center; gap: 8px; }
+    .history-controls label { color: var(--txt-dim); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+    .history-controls select {
+      appearance: none; background: rgba(10, 16, 24, 0.95); color: var(--txt);
+      border: 1px solid var(--line-bright); border-radius: 999px; padding: 6px 10px;
+      font-family: inherit; font-size: 11px; outline: none;
+    }
+    .history-controls select option { background: var(--panel); color: var(--txt); }
+    canvas { width: 100%; height: 180px; display: block; }
+    .legend { display: flex; gap: 14px; margin-top: 6px; font-size: 11px; color: var(--txt-dim); }
+    .legend i { display: inline-block; width: 10px; height: 3px; margin-right: 5px; vertical-align: middle; }
+    .foot { color: var(--txt-dim); font-size: 11px; text-align: center; padding: 14px; }
+    @media (max-width: 900px) {
+      .col-3,.col-4,.col-6,.col-8 { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">NARA <b>//</b> SYSTEM MONITOR</div>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="history-controls">
+      <label for="range-select">Histórico</label>
+      <select id="range-select">
+        <option value="1h">1h</option>
+        <option value="1d">1d</option>
+      </select>
+    </div>
+    <div class="status">ONLINE</div>
+  </div>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- POWER TOTAL -->
+      <div class="panel col-3 pw">
+        <h2>Total Watts <span class="tag">CPU+GPU</span></h2>
+        <div class="big" id="pw-total">--<span class="u">W</span></div>
+        <div class="sub" id="pw-break">CPU -- · GPU --</div>
+        <div class="battery-wrap">
+          <canvas id="battery" width="120" height="56"></canvas>
+          <div class="battery-zones">
+            <div><b style="color:#36e0ff">●</b> &lt; 200 W</div>
+            <div><b style="color:#ffb000">●</b> 200–400 W</div>
+            <div><b style="color:#ff5a5a">●</b> 400–500 W</div>
+          </div>
+        </div>
+      </div>
+      <!-- CPU -->
+      <div class="panel col-3">
+        <h2>CPU <span class="tag" id="cpu-meta">--</span></h2>
+        <div class="big" id="cpu-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="cpu-bar" style="width:0%"></i></div>
+        <div class="sub" id="cpu-sub">load -- · temp --</div>
+        <div class="watermark" style="color:#36e0ff"><img src="{{ url_for('static', filename='cpu.svg') }}" alt="cpu" /></div>
+      </div>
+      <!-- GPU -->
+      <div class="panel col-3">
+        <h2>GPU <span class="tag">RTX 3060</span></h2>
+        <div class="big" id="gpu-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="gpu-bar" style="width:0%"></i></div>
+        <div class="sub" id="gpu-sub">VRAM -- · -- W · --°C</div>
+        <div class="watermark" style="color:#ffb000"><img src="{{ url_for('static', filename='gpu.svg') }}" alt="gpu" /></div>
+      </div>
+      <!-- RAM -->
+      <div class="panel col-3">
+        <h2>RAM <span class="tag" id="ram-meta">--</span></h2>
+        <div class="big" id="ram-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="ram-bar" style="width:0%"></i></div>
+        <div class="sub" id="ram-sub">-- / -- GB</div>
+        <div class="watermark" style="color:#3fe07a"><img src="{{ url_for('static', filename='ram.svg') }}" alt="ram" /></div>
+      </div>
+
+      <!-- VRAM LIVE (fila 2) -->
+      <div class="panel col-3">
+        <h2>VRAM <span class="tag" id="vram-meta">--</span></h2>
+        <div class="big" id="vram-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="vram-bar" style="width:0%"></i></div>
+        <div class="sub" id="vram-sub">-- / -- MB</div>
+        <div class="watermark" style="color:#ffb000"><img src="{{ url_for('static', filename='vram.svg') }}" alt="vram" /></div>
+      </div>
+      <!-- DISK (fila 2) -->
+      <div class="panel col-3">
+        <h2>Disco <span class="tag">/</span></h2>
+        <table id="tbl-disk"></table>
+      </div>
+      <!-- NET (fila 2) -->
+      <div class="panel col-6">
+        <h2>Red <span class="tag" id="net-default">--</span></h2>
+        <table id="tbl-net"></table>
+      </div>
+
+      <!-- POWER HISTORY -->
+      <div class="panel col-6">
+        <h2>Consumo de Potencia <span class="tag" id="power-date">--</span></h2>
+        <canvas id="chart-power"></canvas>
+        <div class="legend">
+          <span><i style="background:#36e0ff"></i>CPU</span>
+          <span><i style="background:#ffb000"></i>GPU</span>
+          <span><i style="background:#3fe07a"></i>Total</span>
+        </div>
+      </div>
+      <!-- CPU / GPU USAGE HISTORY -->
+      <div class="panel col-6">
+        <h2>Uso CPU / GPU <span class="tag" id="usage-date">--</span></h2>
+        <canvas id="chart-usage"></canvas>
+        <div class="legend">
+          <span><i style="background:#36e0ff"></i>CPU</span>
+          <span><i style="background:#ffb000"></i>GPU</span>
+        </div>
+      </div>
+
+      <!-- RAM HISTORY -->
+      <div class="panel col-6">
+        <h2>Uso de RAM <span class="tag" id="ram-date">--</span></h2>
+        <canvas id="chart-ram"></canvas>
+        <div class="legend"><span><i style="background:#3fe07a"></i>RAM %</span></div>
+      </div>
+      <!-- VRAM HISTORY -->
+      <div class="panel col-6">
+        <h2>Historial VRAM <span class="tag" id="vram-date">--</span></h2>
+        <canvas id="chart-vram"></canvas>
+        <div class="legend"><span><i style="background:#ffb000"></i>VRAM MB</span></div>
+      </div>
+    </div>
+    <div class="foot">nara-monitor · refresh 1.5s · datos en vivo del host</div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
