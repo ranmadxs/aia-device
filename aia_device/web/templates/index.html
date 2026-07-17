@@ -166,6 +166,25 @@
         <div class="watermark" style="color:#3fe07a"><img src="{{ url_for('static', filename='ram.svg') }}" alt="ram" /></div>
       </div>
 
+      <!-- VRAM LIVE (fila 2) -->
+      <div class="panel col-3">
+        <h2>VRAM <span class="tag" id="vram-meta">--</span></h2>
+        <div class="big" id="vram-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="vram-bar" style="width:0%"></i></div>
+        <div class="sub" id="vram-sub">-- / -- MB</div>
+        <div class="watermark" style="color:#ffb000"><img src="{{ url_for('static', filename='vram.svg') }}" alt="vram" /></div>
+      </div>
+      <!-- DISK (fila 2) -->
+      <div class="panel col-3">
+        <h2>Disco <span class="tag">/</span></h2>
+        <table id="tbl-disk"></table>
+      </div>
+      <!-- NET (fila 2) -->
+      <div class="panel col-6">
+        <h2>Red <span class="tag" id="net-default">--</span></h2>
+        <table id="tbl-net"></table>
+      </div>
+
       <!-- POWER HISTORY -->
       <div class="panel col-6">
         <h2>Consumo de Potencia <span class="tag" id="power-date">--</span></h2>
@@ -184,25 +203,6 @@
           <span><i style="background:#36e0ff"></i>CPU</span>
           <span><i style="background:#ffb000"></i>GPU</span>
         </div>
-      </div>
-
-      <!-- VRAM LIVE -->
-      <div class="panel col-3">
-        <h2>VRAM <span class="tag" id="vram-meta">--</span></h2>
-        <div class="big" id="vram-usage">--<span class="u">%</span></div>
-        <div class="bar"><i id="vram-bar" style="width:0%"></i></div>
-        <div class="sub" id="vram-sub">-- / -- MB</div>
-        <div class="watermark" style="color:#ffb000"><img src="{{ url_for('static', filename='vram.svg') }}" alt="vram" /></div>
-      </div>
-      <!-- DISK -->
-      <div class="panel col-3">
-        <h2>Disco <span class="tag">/</span></h2>
-        <table id="tbl-disk"></table>
-      </div>
-      <!-- NET -->
-      <div class="panel col-6">
-        <h2>Red <span class="tag" id="net-default">--</span></h2>
-        <table id="tbl-net"></table>
       </div>
 
       <!-- RAM HISTORY -->
