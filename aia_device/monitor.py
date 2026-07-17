@@ -53,7 +53,7 @@ def _extract_series(snap: dict) -> dict:
 
 class Monitor:
     def __init__(self):
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._snapshot = None
         self._ts = 0.0
         self._history = []
