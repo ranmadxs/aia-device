@@ -12,7 +12,7 @@ config_logger()
 logger = logging.getLogger(__name__)
 
 _REFRESH_S = 1.5
-_HISTORY_MAX = 180  # ~3 min a 1.5s de muestreo
+_HISTORY_MAX = 400  # ~10 min a 1.5s de muestreo
 
 
 def _extract_series(snap: dict) -> dict:

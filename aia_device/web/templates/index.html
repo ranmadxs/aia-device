@@ -153,7 +153,7 @@
 
       <!-- POWER HISTORY -->
       <div class="panel col-6">
-        <h2>Consumo de Potencia <span class="tag">W · histórico</span></h2>
+        <h2>Consumo de Potencia <span class="tag" id="power-date">--</span></h2>
         <canvas id="chart-power"></canvas>
         <div class="legend">
           <span><i style="background:#36e0ff"></i>CPU</span>
@@ -170,7 +170,7 @@
 
       <!-- CPU / GPU USAGE HISTORY -->
       <div class="panel col-6">
-        <h2>Uso CPU / GPU <span class="tag">% · histórico</span></h2>
+        <h2>Uso CPU / GPU <span class="tag" id="usage-date">--</span></h2>
         <canvas id="chart-usage"></canvas>
         <div class="legend">
           <span><i style="background:#36e0ff"></i>CPU</span>
@@ -179,18 +179,26 @@
       </div>
       <!-- RAM HISTORY -->
       <div class="panel col-6">
-        <h2>Uso de RAM <span class="tag">% · histórico</span></h2>
+        <h2>Uso de RAM <span class="tag" id="ram-date">--</span></h2>
         <canvas id="chart-ram"></canvas>
         <div class="legend"><span><i style="background:#3fe07a"></i>RAM %</span></div>
       </div>
 
+      <!-- VRAM LIVE -->
+      <div class="panel col-3">
+        <h2>VRAM <span class="tag" id="vram-meta">--</span></h2>
+        <div class="big" id="vram-usage">--<span class="u">%</span></div>
+        <div class="bar"><i id="vram-bar" style="width:0%"></i></div>
+        <div class="sub" id="vram-sub">-- / -- MB</div>
+        <div class="watermark" style="color:#ffb000"><img src="{{ url_for('static', filename='vram.svg') }}" alt="vram" /></div>
+      </div>
       <!-- DISK -->
-      <div class="panel col-4">
+      <div class="panel col-3">
         <h2>Disco <span class="tag">/</span></h2>
         <table id="tbl-disk"></table>
       </div>
       <!-- NET -->
-      <div class="panel col-8">
+      <div class="panel col-6">
         <h2>Red <span class="tag" id="net-default">--</span></h2>
         <table id="tbl-net"></table>
       </div>

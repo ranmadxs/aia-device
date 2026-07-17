@@ -6,6 +6,15 @@ runme:
 
 # RELEASE
 
+## [2.0.0.a2] - 2026-07-16
+### Added
+- 🧠 Monitor de VRAM en vivo (estilo RAM: %, barra de uso, usado/total MB) con
+  su propia marca de agua SVG (`vram.svg`, ámbar).
+- ⏱️ Línea de tiempo (marcas de hora inicio/medio/fin) en **todos** los gráficos
+  históricos: potencia, uso CPU/GPU, RAM y VRAM (antes solo en VRAM).
+### Changed
+- 🕐 Ventana histórica ampliada a ~10 min (400 muestras a 1.5 s, antes ~3 min).
+
 ## [1.0.13] - 2026-07-16
 ### Changed
 - 📊 Nuevo historial de uso de VRAM (MB) con marcas de hora en el eje, en el

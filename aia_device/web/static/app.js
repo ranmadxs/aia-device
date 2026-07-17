@@ -141,6 +141,16 @@ function renderLive(m) {
   document.getElementById("ram-bar").style.width = pct(r.usage_percent) + "%";
   document.getElementById("ram-sub").textContent = `${fmt(r.used_gb, " GB")} / ${fmt(r.total_gb, " GB")} GB`;
 
+  // vram (live, estilo RAM)
+  const gv = m.gpu || {};
+  const vTotal = gv.mem_total_mb || 0;
+  const vUsed = gv.mem_used_mb || 0;
+  const vPct = vTotal ? (vUsed / vTotal) * 100 : 0;
+  document.getElementById("vram-meta").textContent = `${fmt(vTotal, " MB")}`;
+  document.getElementById("vram-usage").innerHTML = `${fmt(Math.round(vPct), "")}<span class="u">%</span>`;
+  document.getElementById("vram-bar").style.width = pct(vPct) + "%";
+  document.getElementById("vram-sub").textContent = `${fmt(vUsed, " MB")} / ${fmt(vTotal, " MB")} MB`;
+
   // disco
   const d = m.disk || {};
   document.getElementById("tbl-disk").innerHTML =
@@ -162,34 +172,38 @@ function renderLive(m) {
 
 // ── Render de gráficos históricos ───────────────────────────────────────────
 function renderHistory(hist) {
+  const times = hist.map(p => p.t);
+  const dateStr = times.length
+    ? new Date(times[times.length - 1] * 1000).toLocaleDateString()
+    : "--";
+
   const cpuW = hist.map(p => p.cpu_w);
   const gpuW = hist.map(p => p.gpu_w);
   const totW = hist.map(p => p.total_w);
   drawChart(document.getElementById("chart-power"),
     [{ color: "#36e0ff", data: cpuW }, { color: "#ffb000", data: gpuW }, { color: "#3fe07a", data: totW }],
-    { unit: "W", max: 250 });
+    { unit: "W", max: 250, times, padBottom: 14 });
+  document.getElementById("power-date").textContent = dateStr;
 
   const cpuU = hist.map(p => p.cpu_usage);
   const gpuU = hist.map(p => p.gpu_usage);
   drawChart(document.getElementById("chart-usage"),
     [{ color: "#36e0ff", data: cpuU }, { color: "#ffb000", data: gpuU }],
-    { unit: "%", max: 100 });
+    { unit: "%", max: 100, times, padBottom: 14 });
+  document.getElementById("usage-date").textContent = dateStr;
 
   const ramU = hist.map(p => p.ram_usage);
   drawChart(document.getElementById("chart-ram"),
     [{ color: "#3fe07a", data: ramU }],
-    { unit: "%", max: 100 });
+    { unit: "%", max: 100, times, padBottom: 14 });
+  document.getElementById("ram-date").textContent = dateStr;
 
   // historial VRAM con marcas de hora
   const vram = hist.map(p => p.gpu_vram);
-  const times = hist.map(p => p.t);
   drawChart(document.getElementById("chart-vram"),
     [{ color: "#ffb000", data: vram }],
     { unit: "MB", times, padBottom: 14 });
-  if (times.length) {
-    const d = new Date(times[times.length - 1] * 1000);
-    document.getElementById("vram-date").textContent = d.toLocaleDateString();
-  }
+  document.getElementById("vram-date").textContent = dateStr;
 }
 
 // ── Loop ────────────────────────────────────────────────────────────────────

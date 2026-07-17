@@ -3,7 +3,6 @@ name: Docker Image Publish
 # Estructura de 3 jobs (build -> publish -> deploy-nara) copiada de aia-mcp.
 # La imagen que se publica aquí es la que luego se despliega en nara.
 on:
-  pull_request:
   push:
     branches:
       - "main"
