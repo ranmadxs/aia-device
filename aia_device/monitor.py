@@ -25,6 +25,7 @@ def _extract_series(snap: dict) -> dict:
         "cpu_usage": (snap.get("cpu") or {}).get("usage_percent"),
         "gpu_usage": (snap.get("gpu") or {}).get("usage_percent"),
         "ram_usage": (snap.get("ram") or {}).get("usage_percent"),
+        "gpu_vram": (snap.get("gpu") or {}).get("mem_used_mb"),
         "cpu_temp": (snap.get("temps") or {}).get("cpu_c"),
         "gpu_temp": (snap.get("temps") or {}).get("gpu_c"),
     }

@@ -6,6 +6,11 @@ runme:
 
 # RELEASE
 
+## [1.0.13] - 2026-07-16
+### Changed
+- 📊 Nuevo historial de uso de VRAM (MB) con marcas de hora en el eje, en el
+  lugar del panel de Temperaturas (redundante, ya se ve en los paneles de CPU/GPU).
+
 ## [1.0.12] - 2026-07-16
 ### Fixed
 - 📦 Corrige `tool.poetry.include` (debe ser array, no tabla) que rompía el

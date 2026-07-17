@@ -13,18 +13,21 @@ function drawChart(canvas, series, opts = {}) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, w, h);
 
+  const padBottom = opts.padBottom || 0;
+  const plotH = h - padBottom;
+
   // grid
   ctx.strokeStyle = "rgba(54,224,255,0.08)";
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
-    const y = (h / 4) * i + 0.5;
+    const y = (plotH / 4) * i + 0.5;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
   }
 
   const max = opts.max || Math.max(1, ...series.flatMap(s => s.data).filter(v => v != null)) * 1.15;
   const n = Math.max(...series.map(s => s.data.length), 2);
   const xAt = (i) => (n <= 1 ? w : (i / (n - 1)) * w);
-  const yAt = (v) => h - (v / max) * h;
+  const yAt = (v) => plotH - (v / max) * plotH;
 
   for (const s of series) {
     ctx.strokeStyle = s.color;
@@ -47,6 +50,20 @@ function drawChart(canvas, series, opts = {}) {
   ctx.fillStyle = "rgba(95,116,136,0.9)";
   ctx.font = "10px monospace";
   ctx.fillText(String(Math.round(max)) + (opts.unit || ""), 4, 12);
+
+  // etiquetas de hora a lo largo del eje (inicio / medio / fin)
+  if (opts.times && opts.times.length) {
+    const idxs = [0, Math.floor((n - 1) / 2), n - 1].filter((v, i, a) => a.indexOf(v) === i);
+    idxs.forEach(i => {
+      const ts = opts.times[i];
+      if (ts == null) return;
+      const label = new Date(ts * 1000).toLocaleTimeString();
+      const x = xAt(i);
+      ctx.textAlign = i === 0 ? "left" : (i === n - 1 ? "right" : "center");
+      ctx.fillText(label, Math.max(2, Math.min(w - 2, x)), h - 3);
+    });
+    ctx.textAlign = "left";
+  }
 }
 
 // ── Batería de watts (tope 500W, zonas de color) ───────────────────────────
@@ -124,14 +141,6 @@ function renderLive(m) {
   document.getElementById("ram-bar").style.width = pct(r.usage_percent) + "%";
   document.getElementById("ram-sub").textContent = `${fmt(r.used_gb, " GB")} / ${fmt(r.total_gb, " GB")} GB`;
 
-  // temperaturas
-  const t = m.temps || {};
-  document.getElementById("tbl-temps").innerHTML =
-    row("CPU (Package)", fmt(t.cpu_c, " °C")) +
-    row("GPU (RTX 3060)", fmt(t.gpu_c, " °C")) +
-    row("RAM (DIMM)", fmt(t.ram_c, " °C")) +
-    row("Disco (SMART)", fmt(t.disk_c, " °C"));
-
   // disco
   const d = m.disk || {};
   document.getElementById("tbl-disk").innerHTML =
@@ -178,6 +187,17 @@ function clock() {
 }
 
 async function tick() {
+
+  // historial VRAM con marcas de hora
+  const vram = hist.map(p => p.gpu_vram);
+  const times = hist.map(p => p.t);
+  drawChart(document.getElementById("chart-vram"),
+    [{ color: "#ffb000", data: vram }],
+    { unit: "MB", times, padBottom: 14 });
+  if (times.length) {
+    const d = new Date(times[times.length - 1] * 1000);
+    document.getElementById("vram-date").textContent = d.toLocaleDateString();
+  }
   try {
     const [mr, hr] = await Promise.all([fetch("/api/metrics"), fetch("/api/history")]);
     const m = await mr.json();
