@@ -211,13 +211,30 @@ function clock() {
   document.getElementById("clock").textContent = new Date().toLocaleTimeString();
 }
 
+async function loadHistory(range = "1h") {
+  try {
+    const [hr, datesRes] = await Promise.all([
+      fetch(`/api/history?range=${range}`),
+      fetch("/api/history_dates"),
+    ]);
+    const h = await hr.json();
+    const dates = await datesRes.json();
+    renderHistory(h);
+    const select = document.getElementById("range-select");
+    if (select) {
+      select.title = `Fechas disponibles: ${dates.join(", ") || "ninguna"}`;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 async function tick() {
   try {
-    const [mr, hr] = await Promise.all([fetch("/api/metrics"), fetch("/api/history")]);
+    const mr = await fetch("/api/metrics");
     const m = await mr.json();
-    const h = await hr.json();
     renderLive(m);
-    renderHistory(h);
+    await loadHistory(document.getElementById("range-select")?.value || "1h");
   } catch (e) {
     console.error(e);
   }
@@ -225,5 +242,6 @@ async function tick() {
 
 clock();
 tick();
+document.getElementById("range-select")?.addEventListener("change", (event) => loadHistory(event.target.value));
 setInterval(tick, 1500);
 setInterval(clock, 1000);

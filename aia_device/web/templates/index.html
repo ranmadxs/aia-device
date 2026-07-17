@@ -94,7 +94,15 @@
     .battery-zones b { font-weight: 700; }
     .bar { height: 6px; background: #0a121b; border: 1px solid var(--line); border-radius: 3px; margin-top: 4px; overflow: hidden; }
     .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-    canvas { width: 100%; height: 150px; display: block; }
+    .history-controls { display: flex; align-items: center; gap: 8px; }
+    .history-controls label { color: var(--txt-dim); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+    .history-controls select {
+      appearance: none; background: rgba(10, 16, 24, 0.95); color: var(--txt);
+      border: 1px solid var(--line-bright); border-radius: 999px; padding: 6px 10px;
+      font-family: inherit; font-size: 11px; outline: none;
+    }
+    .history-controls select option { background: var(--panel); color: var(--txt); }
+    canvas { width: 100%; height: 180px; display: block; }
     .legend { display: flex; gap: 14px; margin-top: 6px; font-size: 11px; color: var(--txt-dim); }
     .legend i { display: inline-block; width: 10px; height: 3px; margin-right: 5px; vertical-align: middle; }
     .foot { color: var(--txt-dim); font-size: 11px; text-align: center; padding: 14px; }
@@ -107,6 +115,13 @@
   <div class="topbar">
     <div class="brand">NARA <b>//</b> SYSTEM MONITOR</div>
     <div class="clock" id="clock">--:--:--</div>
+    <div class="history-controls">
+      <label for="range-select">Histórico</label>
+      <select id="range-select">
+        <option value="1h">1h</option>
+        <option value="1d">1d</option>
+      </select>
+    </div>
     <div class="status">ONLINE</div>
   </div>
 
@@ -161,13 +176,6 @@
           <span><i style="background:#3fe07a"></i>Total</span>
         </div>
       </div>
-      <!-- VRAM HISTORY -->
-      <div class="panel col-6">
-        <h2>Historial VRAM <span class="tag" id="vram-date">--</span></h2>
-        <canvas id="chart-vram"></canvas>
-        <div class="legend"><span><i style="background:#ffb000"></i>VRAM MB</span></div>
-      </div>
-
       <!-- CPU / GPU USAGE HISTORY -->
       <div class="panel col-6">
         <h2>Uso CPU / GPU <span class="tag" id="usage-date">--</span></h2>
@@ -176,12 +184,6 @@
           <span><i style="background:#36e0ff"></i>CPU</span>
           <span><i style="background:#ffb000"></i>GPU</span>
         </div>
-      </div>
-      <!-- RAM HISTORY -->
-      <div class="panel col-6">
-        <h2>Uso de RAM <span class="tag" id="ram-date">--</span></h2>
-        <canvas id="chart-ram"></canvas>
-        <div class="legend"><span><i style="background:#3fe07a"></i>RAM %</span></div>
       </div>
 
       <!-- VRAM LIVE -->
@@ -201,6 +203,19 @@
       <div class="panel col-6">
         <h2>Red <span class="tag" id="net-default">--</span></h2>
         <table id="tbl-net"></table>
+      </div>
+
+      <!-- RAM HISTORY -->
+      <div class="panel col-6">
+        <h2>Uso de RAM <span class="tag" id="ram-date">--</span></h2>
+        <canvas id="chart-ram"></canvas>
+        <div class="legend"><span><i style="background:#3fe07a"></i>RAM %</span></div>
+      </div>
+      <!-- VRAM HISTORY -->
+      <div class="panel col-6">
+        <h2>Historial VRAM <span class="tag" id="vram-date">--</span></h2>
+        <canvas id="chart-vram"></canvas>
+        <div class="legend"><span><i style="background:#ffb000"></i>VRAM MB</span></div>
       </div>
     </div>
     <div class="foot">nara-monitor · refresh 1.5s · datos en vivo del host</div>

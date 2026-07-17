@@ -52,5 +52,7 @@ Desde el Mac: `http://nara:9006`
 ## CI / Release
 - `docker-image.yml` construye en PR (tag = rama), en push a `main`
   (tag = `poetry version --short`) y en tags `v*.*.*`. Plataforma `linux/amd64`.
+- El despliegue en nara monta el volumen persistente `/data` para conservar el
+  historial diario de métricas entre reinicios del contenedor.
 - El trigger de PR es temporal: se saca cuando el monitor funcione en nara.
 

@@ -6,6 +6,16 @@ runme:
 
 # RELEASE
 
+## [2.0.0.a3] - 2026-07-17
+### Added
+- 🗂️ Historial persistente por día en `/data/history` con selector `1h/1d` y
+  endpoint `/api/history_dates`.
+- 🎛️ Combo box estilizado en la barra superior para navegar entre 1h y 1d.
+### Changed
+- 📐 Reorganización del dashboard: primera fila igual, segunda fila con VRAM/Disco/Red,
+  tercera fila con historiales CPU/GPU y RAM/VRAM.
+- ⏱️ Ventana histórica ampliada a 1 hora en memoria y 1 día de persistencia.
+
 ## [2.0.0.a2] - 2026-07-16
 ### Added
 - 🧠 Monitor de VRAM en vivo (estilo RAM: %, barra de uso, usado/total MB) con
