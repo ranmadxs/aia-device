@@ -6,6 +6,14 @@ runme:
 
 # RELEASE
 
+## [2.2.0] - 2026-07-17
+### Added
+- 📊 Top 10 procesos por CPU y RAM en las vistas CPU, GPU, RAM, Disco y Red.
+### Changed
+- 🏷️ Marca superior: `AiA Monitor · Nara`.
+- 🌡️ Vista RAM muestra la temperatura del sistema como referencia cuando no
+  hay sensor DIMM (antes N/A vacío).
+
 ## [2.1.0] - 2026-07-17
 ### Added
 - 🎨 Rediseño del dashboard al estilo **MSI Click BIOS 5**: barra superior con

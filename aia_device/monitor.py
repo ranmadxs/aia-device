@@ -9,7 +9,7 @@ from pathlib import Path
 
 from aia_utils.logs_cfg import config_logger
 
-from aia_device.collectors import cpu, gpu, ram, disk, net, power, temps
+from aia_device.collectors import cpu, gpu, ram, disk, net, power, temps, top
 
 config_logger()
 logger = logging.getLogger(__name__)
@@ -69,6 +69,7 @@ class Monitor:
         net_d = net.collect()
         pwr_d = power.collect(gpu_d.get("power_w"))
         temps_d = temps.collect(cpu_d, gpu_d, ram_d, disk_d)
+        top_d = top.collect()
         return {
             "timestamp": time.time(),
             "cpu": cpu_d,
@@ -78,6 +79,7 @@ class Monitor:
             "net": net_d,
             "power": pwr_d,
             "temps": temps_d,
+            "top": top_d,
         }
 
     def _history_file_for(self, ts: float | None = None) -> Path:

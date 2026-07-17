@@ -10,6 +10,26 @@ const brandBlock = (d) => {
   return `<div class="brandline"><span class="b">${b || "—"}</span>` +
     (m ? `<span class="m">${m}</span>` : "") + `</div>`;
 };
+const topTable = (top, kind) => {
+  const rows = (top?.[kind] || []);
+  if (!rows.length) return '<div class="sub">sin datos</div>';
+  let h = '<table><tr><td class="k">PID</td><td class="k">Proc</td><td class="k">User</td>' +
+    (kind === "by_cpu" ? '<td class="v">CPU%</td>' : '<td class="v">RAM MB</td>') + '</tr>';
+  for (const p of rows) {
+    h += `<tr><td class="k">${p.pid}</td><td class="k">${p.name}</td><td class="k">${p.user}</td>` +
+      `<td class="v">${kind === "by_cpu" ? fmt(p.cpu_pct, " %") : fmt(p.rss_mb)}</td></tr>`;
+  }
+  return h + '</table>';
+};
+const topCard = (top) => `
+  <div class="card col-6">
+    <h3>TOP 10 · CPU</h3>
+    ${topTable(top, "by_cpu")}
+  </div>
+  <div class="card col-6">
+    <h3>TOP 10 · RAM</h3>
+    ${topTable(top, "by_mem")}
+  </div>`;
 const ICONS = {
   system: '<svg class="ic" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/></svg>',
   cpu: '<svg class="ic" viewBox="0 0 24 24"><path d="M7 7h10v10H7V7zm-3 3H2v4h2v-4zm16 0h-2v4h2v-4zM9 2v2h6V2H9zm0 20v-2h6v2H9z"/></svg>',
@@ -215,8 +235,11 @@ function viewGpu(g, hist) {
     </div>`;
 }
 
-function viewRam(r, hist) {
+function viewRam(r, hist, sysTemp) {
   const date = hist.length ? new Date(hist[hist.length - 1].t * 1000).toLocaleDateString() : "--";
+  const ramTemp = r.temp_c;
+  const tempVal = ramTemp != null ? ramTemp : sysTemp;
+  const tempNote = ramTemp != null ? "sensor DIMM" : "ref. sistema (sin sensor DIMM)";
   return `
     <div class="view-title">${ICONS.ram} RAM</div>
     ${brandBlock(r)}
@@ -234,8 +257,8 @@ function viewRam(r, hist) {
       </div>
       <div class="card col-4">
         <h3>TEMP</h3>
-        <div class="big">${fmt(r.temp_c,"")}<span class="u">°C</span></div>
-        <div class="sub">sensor DIMM (si aplica)</div>
+        <div class="big">${fmt(tempVal)}<span class="u">°C</span></div>
+        <div class="sub">${tempNote}</div>
       </div>
       <div class="card col-12">
         <h3>USO HISTÓRICO <span style="float:right;color:var(--txt-dim)">${date}</span></h3>
@@ -346,6 +369,7 @@ function viewNet(net, hist) {
         <h3>TRÁFICO</h3>
         <table>${rows}</table>
       </div>
+      ${topCard(lastMetrics.top || {})}
     </div>`;
 }
 
@@ -358,7 +382,7 @@ function renderView() {
   switch (currentView) {
     case "cpu": html = viewCpu(m.cpu || {}, lastHistory); crumb.textContent = "CPU"; break;
     case "gpu": html = viewGpu(m.gpu || {}, lastHistory); crumb.textContent = "GPU"; break;
-    case "ram": html = viewRam(m.ram || {}, lastHistory); crumb.textContent = "RAM"; break;
+    case "ram": html = viewRam(m.ram || {}, lastHistory, (m.cpu||{}).temp_c); crumb.textContent = "RAM"; break;
     case "vram": html = viewVram(m.gpu || {}, lastHistory); crumb.textContent = "VRAM"; break;
     case "watts": html = viewWatts(m.power || {}, lastHistory); crumb.textContent = "Watts"; break;
     case "disk": html = viewDisk(m.disk || {}, lastHistory); crumb.textContent = "Disco"; break;
