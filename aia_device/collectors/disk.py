@@ -33,6 +33,27 @@ def _io_mbps() -> dict:
         return {"read_mbps": None, "write_mbps": None}
 
 
+def _model() -> dict:
+    """Marca/modelo del disco vía smartctl (si está disponible)."""
+    try:
+        out = subprocess.run(
+            ["smartctl", "-i", DEVICE], capture_output=True, text=True, timeout=5
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+        logger.debug(f"smartctl no disponible: {e}")
+        return {"brand": None, "model": None}
+    brand = model = None
+    for line in out.stdout.splitlines():
+        s = line.strip()
+        if s.startswith("Model Family:"):
+            brand = s.split(":", 1)[1].strip() or None
+        elif s.startswith("Device Model:"):
+            model = s.split(":", 1)[1].strip() or None
+    if not brand and model:
+        brand = model.split()[0]
+    return {"brand": brand, "model": model}
+
+
 def _smart_temp() -> float | None:
     try:
         out = subprocess.run(
@@ -54,9 +75,12 @@ def collect() -> dict:
     total_gb = usage.total / (1024**3)
     used_gb = usage.used / (1024**3)
     io = _io_mbps()
+    model = _model()
     return {
         "mount": ROOT,
         "device": DEVICE,
+        "brand": model.get("brand"),
+        "model": model.get("model"),
         "total_gb": round(total_gb, 1),
         "used_gb": round(used_gb, 1),
         "usage_percent": round(usage.percent, 1),

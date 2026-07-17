@@ -1,4 +1,6 @@
 """Network collector: ancho de banda RX/TX por interfaz + ruta por defecto."""
+import subprocess
+
 import psutil
 
 from aia_utils.logs_cfg import config_logger
@@ -32,6 +34,25 @@ def _default_iface() -> str | None:
     return None
 
 
+def _iface_model(iface: str | None) -> dict:
+    """Marca/modelo del adaptador por defecto vía `ip` (link/device)."""
+    if not iface:
+        return {"brand": None, "model": None}
+    try:
+        out = subprocess.run(
+            ["ip", "-br", "link", "show", iface],
+            capture_output=True, text=True, timeout=5,
+        )
+        line = out.stdout.strip().splitlines()[0] if out.stdout.strip() else ""
+        # formas: "wlx0013eff21155: <...> link/ether ..."
+        if "link/ether" in line:
+            brand = "Wireless" if iface.startswith("wl") else "Ethernet"
+            return {"brand": brand, "model": iface}
+    except (FileNotFoundError, subprocess.TimeoutExpired, IndexError) as e:
+        logger.debug(f"ip no disponible: {e}")
+    return {"brand": None, "model": None}
+
+
 def collect() -> dict:
     counters1 = psutil.net_io_counters(pernic=True)
     import time
@@ -39,6 +60,7 @@ def collect() -> dict:
     time.sleep(1)
     counters2 = psutil.net_io_counters(pernic=True)
     default = _default_iface()
+    model = _iface_model(default)
     interfaces = {}
     for name in list(counters1.keys()):
         if WATCH and name not in WATCH and name != default:
@@ -55,4 +77,9 @@ def collect() -> dict:
             "tx_kbps": round(tx_kbps, 1),
             "is_default": name == default,
         }
-    return {"default_iface": default, "interfaces": interfaces}
+    return {
+        "default_iface": default,
+        "brand": model.get("brand"),
+        "model": model.get("model"),
+        "interfaces": interfaces,
+    }

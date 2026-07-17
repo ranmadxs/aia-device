@@ -15,6 +15,18 @@ QUERY = (
 FORMAT = "csv,noheader,nounits"
 
 
+def _name() -> str | None:
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
+            capture_output=True, text=True, timeout=5,
+        )
+        return out.stdout.strip().splitlines()[0] or None
+    except (FileNotFoundError, subprocess.TimeoutExpired, IndexError) as e:
+        logger.debug(f"nvidia-smi name no disponible: {e}")
+        return None
+
+
 def _query() -> list[float]:
     out = subprocess.run(
         ["nvidia-smi", f"--query-gpu={QUERY}", f"--format={FORMAT}"],
@@ -28,11 +40,14 @@ def _query() -> list[float]:
 
 def collect() -> dict:
     try:
+        name = _name()
         util, mem_used, mem_total, power, power_limit, temp = _query()
     except (FileNotFoundError, subprocess.TimeoutExpired, IndexError, ValueError) as e:
         logger.debug(f"nvidia-smi no disponible: {e}")
         return {
             "available": False,
+            "brand": "NVIDIA",
+            "model": None,
             "usage_percent": None,
             "mem_used_mb": None,
             "mem_total_mb": None,
@@ -42,6 +57,8 @@ def collect() -> dict:
         }
     return {
         "available": True,
+        "brand": "NVIDIA",
+        "model": name,
         "usage_percent": round(util, 1),
         "mem_used_mb": round(mem_used),
         "mem_total_mb": round(mem_total),

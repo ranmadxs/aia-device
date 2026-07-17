@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aia-device"
-version = "2.0.0"
+version = "2.1.0"
 description = "nara host real-time monitor (CPU/GPU/RAM/disk/net/temps + total watts)"
 authors = ["Edgar Rodrigo Sanchez De Gracia <grineldosanchez@yahoo.es>"]
 readme = "README.md"

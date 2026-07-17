@@ -6,6 +6,14 @@ runme:
 
 # RELEASE
 
+## [2.1.0] - 2026-07-17
+### Added
+- 🎨 Rediseño del dashboard al estilo **MSI Click BIOS 5**: barra superior con
+  reloj/temp/watts, menú lateral de íconos y panel central por categoría
+  (System, CPU, GPU, RAM, VRAM, Watts, Disco, Red).
+- 🏷️ Marca y modelo por componente (CPU vía `/proc/cpuinfo`, GPU vía
+  `nvidia-smi`, RAM/Disco vía `dmidecode`/`smartctl`, Red vía `ip`).
+
 ## [2.0.0] - 2026-07-17
 ### Fixed
 - 🐛 Deadlock en `Monitor` por `threading.Lock` no reentrant (se adquiría dos
